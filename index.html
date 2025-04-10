@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhotoBooth Đẹp</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PhotoBooth <i class="fas fa-camera-retro"></i></h1>
+            <p>Lưu giữ khoảnh khắc đẹp của bạn</p>
+        </header>
+        
+        <main>
+            <div class="booth">
+                <div class="camera-container">
+                    <video id="camera" autoplay></video>
+                    <canvas id="canvas" style="display: none;"></canvas>
+                    <div class="flash"></div>
+                    <div id="countdown" class="countdown"></div>
+                    <div class="camera-overlay">
+                        <div class="camera-frame"></div>
+                    </div>
+                    <div class="stickers-preview" id="stickers-preview"></div>
+                </div>
+                
+                <div class="controls">
+                    <button id="capture" class="btn btn-primary"><i class="fas fa-camera"></i> Chụp ảnh</button>
+                    <button id="download" class="btn btn-success" disabled><i class="fas fa-download"></i> Tải về</button>
+                    <button id="retake" class="btn btn-secondary" style="display: none;"><i class="fas fa-redo"></i> Chụp lại</button>
+                    <button id="collage" class="btn btn-info"><i class="fas fa-th-large"></i> Ghép ảnh</button>
+                </div>
+                
+                <div class="mode-selector">
+                    <div class="mode-title">Chế độ:</div>
+                    <div class="mode-options">
+                        <label class="mode-option">
+                            <input type="radio" name="mode" value="single" checked> 
+                            <span class="mode-icon"><i class="fas fa-portrait"></i></span>
+                            <span>Đơn</span>
+                        </label>
+                        <label class="mode-option">
+                            <input type="radio" name="mode" value="side_by_side"> 
+                            <span class="mode-icon"><i class="fas fa-images"></i></span>
+                            <span>Ghép 2 ảnh</span>
+                        </label>
+                        <label class="mode-option">
+                            <input type="radio" name="mode" value="collage_2x2"> 
+                            <span class="mode-icon"><i class="fas fa-th-large"></i></span>
+                            <span>2x2</span>
+                        </label>
+                        <label class="mode-option">
+                            <input type="radio" name="mode" value="collage_3x3"> 
+                            <span class="mode-icon"><i class="fas fa-th"></i></span>
+                            <span>3x3</span>
+                        </label>
+                        <label class="mode-option">
+                            <input type="radio" name="mode" value="strip"> 
+                            <span class="mode-icon"><i class="fas fa-film"></i></span>
+                            <span>Dải ảnh</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="filters-container">
+                    <div class="filters-title">Bộ lọc:</div>
+                    <div class="filters">
+                        <button class="filter-btn active" data-filter="normal">
+                            <div class="filter-preview normal"></div>
+                            <span>Thường</span>
+                        </button>
+                        <button class="filter-btn" data-filter="grayscale">
+                            <div class="filter-preview grayscale"></div>
+                            <span>Đen trắng</span>
+                        </button>
+                        <button class="filter-btn" data-filter="sepia">
+                            <div class="filter-preview sepia"></div>
+                            <span>Sepia</span>
+                        </button>
+                        <button class="filter-btn" data-filter="invert">
+                            <div class="filter-preview invert"></div>
+                            <span>Đảo màu</span>
+                        </button>
+                        <button class="filter-btn" data-filter="vintage">
+                            <div class="filter-preview vintage"></div>
+                            <span>Vintage</span>
+                        </button>
+                        <button class="filter-btn" data-filter="pastel">
+                            <div class="filter-preview pastel"></div>
+                            <span>Pastel</span>
+                        </button>
+                        <button class="filter-btn" data-filter="cute">
+                            <div class="filter-preview cute"></div>
+                            <span>Cute</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="stickers-container">
+                    <div class="stickers-title">Stickers:</div>
+                    <div class="stickers">
+                        <button class="sticker-btn" data-sticker="crown"><img src="stickers/crown.png" alt="Crown"></button>
+                        <button class="sticker-btn" data-sticker="heart"><img src="stickers/heart.png" alt="Heart"></button>
+                        <button class="sticker-btn" data-sticker="star"><img src="stickers/star.png" alt="Star"></button>
+                        <button class="sticker-btn" data-sticker="sunglasses"><img src="stickers/sunglasses.png" alt="Sunglasses"></button>
+                        <button class="sticker-btn" data-sticker="hat"><img src="stickers/hat.png" alt="Hat"></button>
+                        <button class="sticker-btn" data-sticker="butterfly"><img src="stickers/butterfly.png" alt="Butterfly"></button>
+                    </div>
+                </div>
+                
+                <div id="collage-preview" class="collage-preview" style="display: none;">
+                    <h3>Ghép ảnh của bạn</h3>
+                    <div class="collage-container" id="collage-container"></div>
+                    <div class="collage-controls">
+                        <button id="finish-collage" class="btn btn-success"><i class="fas fa-check"></i> Hoàn thành</button>
+                        <button id="cancel-collage" class="btn btn-danger"><i class="fas fa-times"></i> Hủy</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="gallery">
+                <h2>Thư viện ảnh <i class="fas fa-images"></i></h2>
+                <div id="photos" class="photos-container"></div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>© 2023 PhotoBooth Đẹp - Tạo bởi Bạn</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
