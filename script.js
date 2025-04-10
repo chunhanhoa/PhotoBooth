@@ -425,6 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const img = document.createElement('img');
                 img.src = collagePhotos[i].src;
                 img.classList.add(`filter-${collagePhotos[i].filter}`);
+                img.style.objectFit = 'cover'; // Sử dụng object-fit: cover để fill vào khung
                 cell.appendChild(img);
             } else {
                 cell.classList.add('empty');
@@ -459,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.lineWidth = 10;
         ctx.strokeRect(5, 5, canvasWidth - 10, canvasHeight - 10);
         
-        // Vẽ từng ảnh với đúng tỷ lệ và fit vào khung
+        // Vẽ từng ảnh với đúng tỷ lệ và fill vào khung
         const promises = collagePhotos.map((photo, index) => {
             return new Promise((resolve) => {
                 const img = new Image();
@@ -471,23 +472,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     ctx.lineWidth = 4;
                     ctx.strokeRect(x + 5, 5, imageWidth - 10, imageHeight - 10);
                     
-                    // Tính toán để ảnh fit trong khung
+                    // Tính toán để ảnh fill trong khung
                     const aspectRatio = img.width / img.height;
-                    let drawWidth, drawHeight;
+                    let drawWidth, drawHeight, offsetX, offsetY;
                     
+                    // Phương pháp COVER thay vì FIT để đảm bảo lấp đầy khung
                     if (aspectRatio > imageWidth / imageHeight) {
                         // Ảnh rộng hơn tỷ lệ khung
-                        drawWidth = imageWidth - 20;
-                        drawHeight = drawWidth / aspectRatio;
+                        drawHeight = imageHeight;
+                        drawWidth = drawHeight * aspectRatio;
+                        offsetX = x + (imageWidth - drawWidth) / 2;
+                        offsetY = 0;
                     } else {
                         // Ảnh cao hơn tỷ lệ khung
-                        drawHeight = imageHeight - 20;
-                        drawWidth = drawHeight * aspectRatio;
+                        drawWidth = imageWidth;
+                        drawHeight = drawWidth / aspectRatio;
+                        offsetX = x;
+                        offsetY = (imageHeight - drawHeight) / 2;
                     }
-                    
-                    // Căn giữa ảnh trong ô
-                    const offsetX = x + (imageWidth - drawWidth) / 2;
-                    const offsetY = (imageHeight - drawHeight) / 2;
                     
                     // Áp dụng bộ lọc
                     if (photo.filter !== 'normal') {
@@ -504,7 +506,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ctx.filter = filterMap[photo.filter] || 'none';
                     }
                     
-                    // Vẽ ảnh vừa khít với khung
+                    // Vẽ ảnh fill vào khung
                     ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
                     
                     if (photo.filter !== 'normal') {
@@ -594,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.lineWidth = 10;
         ctx.strokeRect(5, 5, collageWidth - 10, collageHeight - 10);
         
-        // Vẽ từng ảnh
+        // Vẽ từng ảnh để fill vào khung
         const promises = collagePhotos.map((photo, i) => {
             return new Promise((resolve) => {
                 const row = Math.floor(i / cols);
@@ -610,23 +612,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     ctx.lineWidth = 4;
                     ctx.strokeRect(x + 5, y + 5, cellWidth - 10, cellHeight - 10);
                     
-                    // Tính toán để ảnh fit hoàn toàn vào khung, giữ nguyên tỷ lệ
+                    // Tính toán để ảnh fill hoàn toàn vào khung, dùng phương pháp cover
                     const aspectRatio = img.width / img.height;
-                    let drawWidth, drawHeight;
+                    let drawWidth, drawHeight, offsetX, offsetY;
                     
+                    // Phương pháp COVER thay vì FIT
                     if (aspectRatio > cellWidth / cellHeight) {
                         // Ảnh rộng hơn tỷ lệ ô
-                        drawWidth = cellWidth - 20;
-                        drawHeight = drawWidth / aspectRatio;
+                        drawHeight = cellHeight;
+                        drawWidth = drawHeight * aspectRatio;
+                        offsetX = x + (cellWidth - drawWidth) / 2;
+                        offsetY = y;
                     } else {
                         // Ảnh cao hơn tỷ lệ ô
-                        drawHeight = cellHeight - 20;
-                        drawWidth = drawHeight * aspectRatio;
+                        drawWidth = cellWidth;
+                        drawHeight = drawWidth / aspectRatio;
+                        offsetX = x;
+                        offsetY = y + (cellHeight - drawHeight) / 2;
                     }
-                    
-                    // Vị trí căn giữa trong ô
-                    const offsetX = x + (cellWidth - drawWidth) / 2;
-                    const offsetY = y + (cellHeight - drawHeight) / 2;
                     
                     // Áp dụng bộ lọc
                     if (photo.filter !== 'normal') {
