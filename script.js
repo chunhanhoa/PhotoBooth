@@ -47,6 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Khởi động camera
     async function startCamera() {
         try {
+            // Hiển thị thông báo đang khởi động camera
+            console.log('Đang khởi động camera...');
+            const cameraStatus = document.createElement('div');
+            cameraStatus.className = 'camera-status';
+            cameraStatus.textContent = 'Đang kết nối camera...';
+            document.querySelector('.camera-container').appendChild(cameraStatus);
+
             const constraints = {
                 video: {
                     width: { ideal: 1280 },
@@ -55,17 +62,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             };
             
+            console.log('Yêu cầu quyền truy cập camera với:', constraints);
             const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            console.log('Đã nhận stream camera:', stream);
+            
             video.srcObject = stream;
             currentStream = stream;
             captureBtn.disabled = false;
             downloadBtn.disabled = true;
             
-            // Đặt kích thước canvas bằng với video
+            // Xử lý sự kiện của video
             video.onloadedmetadata = () => {
+                console.log('Video metadata đã tải. Kích thước:', video.videoWidth, 'x', video.videoHeight);
                 canvas.width = video.videoWidth || 640;
                 canvas.height = video.videoHeight || 480;
                 video.classList.add(`filter-${currentFilter}`);
+                
+                // Đảm bảo video hiển thị
+                video.style.display = 'block';
                 
                 // Áp dụng trạng thái lật ảnh
                 if (isFlipped) {
@@ -73,11 +87,56 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     video.style.transform = 'scaleX(1)';
                 }
+
+                // Xóa thông báo status
+                const statusElem = document.querySelector('.camera-status');
+                if (statusElem) statusElem.remove();
+            };
+            
+            // Sự kiện khi video bắt đầu phát
+            video.onplay = () => {
+                console.log('Video đang phát');
+                captureBtn.disabled = false;
+                downloadBtn.disabled = true;
+            };
+            
+            // Thêm xử lý lỗi cho video
+            video.onerror = (err) => {
+                console.error('Lỗi video:', err);
+                alert(`Lỗi hiển thị video: ${err.message}`);
             };
             
         } catch (err) {
-            console.error('Lỗi khi truy cập camera:', err);
-            alert('Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập và thử lại!');
+            console.error('Lỗi chi tiết khi truy cập camera:', err);
+            let errorMessage = 'Không thể truy cập camera. ';
+            
+            // Cung cấp thông báo lỗi chi tiết hơn
+            if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                errorMessage += 'Không tìm thấy camera. Vui lòng kiểm tra thiết bị camera của bạn.';
+            } else if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                errorMessage += 'Quyền truy cập camera bị từ chối. Vui lòng cấp quyền truy cập camera cho trang web này.';
+            } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                errorMessage += 'Camera đang được sử dụng bởi ứng dụng khác. Vui lòng đóng các ứng dụng khác đang sử dụng camera.';
+            } else if (err.name === 'OverconstrainedError' || err.name === 'ConstraintNotSatisfiedError') {
+                errorMessage += 'Không thể sử dụng camera với các yêu cầu hiện tại. Thử lại với cài đặt thấp hơn.';
+            } else {
+                errorMessage += `Lỗi: ${err.message}`;
+            }
+            
+            alert(errorMessage);
+            
+            // Hiển thị lỗi trong giao diện
+            const cameraContainer = document.querySelector('.camera-container');
+            cameraContainer.innerHTML = `
+                <div class="camera-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>${errorMessage}</p>
+                    <button id="retry-camera" class="btn btn-primary">Thử lại</button>
+                </div>
+            `;
+            
+            // Thêm sự kiện nút thử lại
+            document.getElementById('retry-camera').addEventListener('click', startCamera);
         }
     }
     
@@ -115,7 +174,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Chụp ảnh từ video
         canvas.width = video.videoWidth || video.clientWidth;
         canvas.height = video.videoHeight || video.clientHeight;
-        
         context.save();
         
         // Xử lý lật ảnh dựa vào trạng thái isFlipped
@@ -160,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Chuyển đổi sang base64 và lưu
         const imgData = canvas.toDataURL('image/png');
-        
+        captureBtn.disabled = true;
         if (collageMode === 'single') {
             photosTaken.push({
                 src: imgData,
@@ -199,7 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if ((collageMode === 'collage_2x2' && collagePhotos.length === 4) || 
                 (collageMode === 'collage_3x3' && collagePhotos.length === 9) || 
                 (collageMode === 'strip' && collagePhotos.length === 4)) {
-                
                 createCollage();
             } else {
                 // Tiếp tục chụp nếu chưa đủ
@@ -407,7 +464,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalCells = collageMode === 'collage_2x2' ? 4 : 
                            (collageMode === 'collage_3x3' ? 9 : 
                            (collageMode === 'side_by_side' ? 2 : 4));
-                           
         const gridTemplate = collageMode === 'collage_3x3' ? 'repeat(3, 1fr)' : 
                             (collageMode === 'strip' ? '1fr' : 
                             (collageMode === 'side_by_side' ? 'repeat(2, 1fr)' : 'repeat(2, 1fr)'));
@@ -502,7 +558,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             'pastel': 'brightness(1.1) saturate(1.3) contrast(0.9)',
                             'cute': 'brightness(1.1) saturate(1.5) contrast(0.85) hue-rotate(10deg)'
                         };
-                        
                         ctx.filter = filterMap[photo.filter] || 'none';
                     }
                     
@@ -527,8 +582,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const today = new Date();
             const dateStr = today.toLocaleDateString('vi-VN', {
-                year: 'numeric', 
-                month: 'short', 
+                year: 'numeric',
+                month: 'short',
                 day: 'numeric'
             });
             
@@ -580,7 +635,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Điều chỉnh kích thước cho phù hợp với tỷ lệ
         const cellWidth = 300;
         const cellHeight = collageMode === 'strip' ? 200 : 300;
-        
         const collageWidth = cellWidth * cols;
         const collageHeight = cellHeight * rows;
         
@@ -642,7 +696,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             'pastel': 'brightness(1.1) saturate(1.3) contrast(0.9)',
                             'cute': 'brightness(1.1) saturate(1.5) contrast(0.85) hue-rotate(10deg)'
                         };
-                        
                         ctx.filter = filterMap[photo.filter] || 'none';
                     }
                     
@@ -664,7 +717,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
         
-        // Khi tất cả ảnh đã được vẽ
         Promise.all(promises).then(() => {
             // Thêm ngày tháng và trang trí
             ctx.font = '16px Quicksand, sans-serif';
@@ -673,8 +725,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const today = new Date();
             const dateStr = today.toLocaleDateString('vi-VN', {
-                year: 'numeric', 
-                month: 'short', 
+                year: 'numeric',
+                month: 'short',
                 day: 'numeric'
             });
             
@@ -826,7 +878,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update sticker in activeStickers array
             const stickerId = parseInt(draggedSticker.id.split('-')[1]);
             const stickerIndex = activeStickers.findIndex(s => s.id === stickerId);
-            
             if (stickerIndex !== -1) {
                 activeStickers[stickerIndex].x = newX;
                 activeStickers[stickerIndex].y = newY;
@@ -902,13 +953,37 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Khởi động camera khi trang được tải
+    setTimeout(() => {
+        console.log('Bắt đầu khởi tạo camera...');
+        startCamera();
+    }, 500);
+
+    // Thêm một nút để khởi động lại camera trong trường hợp có vấn đề
+    const restartCamBtn = document.createElement('button');
+    restartCamBtn.className = 'btn btn-warning';
+    restartCamBtn.innerHTML = '<i class="fas fa-sync"></i> Khởi động lại camera';
+    restartCamBtn.style.display = 'none'; // Ẩn ban đầu
+    restartCamBtn.addEventListener('click', () => {
+        // Dừng stream hiện tại nếu có
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+        }
+        startCamera();
+    });
+    document.querySelector('.controls').appendChild(restartCamBtn);
+    
+    // Hiện nút sau 5 giây nếu camera không hoạt động
+    setTimeout(() => {
+        if (!currentStream || !video.srcObject) {
+            restartCamBtn.style.display = 'block';
+        }
+    }, 5000);
     
     // Đặt bộ lọc mặc định là normal
     filterBtns[0].classList.add('active');
     
     // Tải stickers
     preloadStickers();
-    
-    // Khởi động camera khi trang được tải
-    startCamera();
 });
