@@ -707,6 +707,196 @@ footer {
     filter: brightness(1.1) saturate(1.5) contrast(0.85) hue-rotate(10deg);
 }
 
+/* Cải thiện Responsive cho Mobile */
+
+/* Nâng cao khả năng responsive cho điện thoại */
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px;
+        font-size: 1rem;
+    }
+    
+    .photos-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .mode-options {
+        gap: 5px;
+    }
+    
+    .mode-icon {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .filter-preview {
+        width: 50px;
+        height: 50px;
+    }
+    
+    /* Cải thiện hiển thị cho thiết bị nhỏ */
+    .mode-selector, .filters-container, .stickers-container {
+        padding: 12px 10px;
+        margin: 15px 0;
+    }
+    
+    .filters {
+        gap: 8px;
+    }
+    
+    .filter-btn {
+        padding: 4px;
+    }
+    
+    .stickers {
+        gap: 8px;
+    }
+    
+    /* Bo tròn các góc nhỏ hơn trên mobile */
+    .photo-item,
+    .btn,
+    .mode-selector,
+    .filters-container,
+    .stickers-container,
+    .collage-preview {
+        border-radius: 15px;
+    }
+    
+    .camera-container {
+        max-height: 60vh;
+    }
+    
+    /* Điều chỉnh kích thước font cho tiêu đề */
+    header h1 {
+        font-size: 2.2rem;
+    }
+    
+    header p {
+        font-size: 1rem;
+    }
+}
+
+/* Thiết bị rất nhỏ */
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .booth {
+        padding: 15px 10px;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+        margin-bottom: 2px;
+    }
+    
+    header p {
+        font-size: 0.9rem;
+    }
+    
+    .photos-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .sticker-btn {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .mode-option {
+        padding: 5px;
+    }
+    
+    .mode-icon {
+        width: 32px;
+        height: 32px;
+        margin-bottom: 2px;
+    }
+    
+    .mode-option span:last-child {
+        font-size: 0.8rem;
+    }
+    
+    /* Sắp xếp các nút điều khiển tốt hơn */
+    .controls {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    #capture {
+        grid-column: span 2;
+    }
+    
+    /* Điều chỉnh kích thước nút */
+    .btn {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    
+    /* Điều chỉnh hiển thị tốt hơn cho collage preview */
+    .collage-item {
+        min-height: 80px;
+    }
+    
+    .collage-controls {
+        gap: 10px;
+    }
+    
+    .collage-controls .btn {
+        padding: 8px 12px;
+    }
+    
+    /* Đảm bảo camera container có tỷ lệ tốt trên điện thoại */
+    .camera-container {
+        max-height: 50vh;
+        aspect-ratio: 4/3;
+    }
+}
+
+/* Điều chỉnh cho điện thoại xoay ngang */
+@media (max-width: 896px) and (orientation: landscape) {
+    .booth {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    .camera-container {
+        grid-row: span 3;
+        max-height: 70vh;
+    }
+    
+    .controls {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .mode-selector, .filters-container, .stickers-container {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    .collage-preview {
+        grid-column: span 2;
+    }
+    
+    header {
+        margin-bottom: 10px;
+    }
+}
+
 @media (max-width: 768px) {
     .controls {
         flex-direction: column;

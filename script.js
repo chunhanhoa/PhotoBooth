@@ -47,11 +47,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Khởi động camera
     async function startCamera() {
         try {
+            // Kiểm tra nếu là thiết bị mobile
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // Thiết lập cấu hình camera phù hợp với thiết bị
             const constraints = {
                 video: {
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 },
-                    facingMode: 'user'
+                    facingMode: 'user',
+                    width: isMobile ? 
+                        { ideal: window.innerWidth < window.innerHeight ? window.innerWidth : 720 } : 
+                        { ideal: 1280 },
+                    height: isMobile ? 
+                        { ideal: window.innerWidth < window.innerHeight ? window.innerWidth * 0.75 : 540 } : 
+                        { ideal: 720 }
                 }
             };
             
@@ -77,7 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
         } catch (err) {
             console.error('Lỗi khi truy cập camera:', err);
-            alert('Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập và thử lại!');
+            
+            // Thông báo thân thiện hơn trên mobile
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                alert('Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập camera và làm mới trang.');
+            } else {
+                alert('Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập và thử lại!');
+            }
         }
     }
     
@@ -323,6 +337,26 @@ document.addEventListener('DOMContentLoaded', () => {
             stickersPreview.appendChild(draggedSticker);
         });
         
+        // THÊM MỚI: Hỗ trợ touch events cho mobile
+        stickerDiv.addEventListener('touchstart', (e) => {
+            // Không kích hoạt kéo thả nếu đang chạm vào nút điều khiển
+            if (e.target.closest('.sticker-btn-control')) return;
+            
+            isDraggingSticker = true;
+            draggedSticker = stickerDiv;
+            
+            const touch = e.touches[0];
+            const rect = draggedSticker.getBoundingClientRect();
+            dragStartX = touch.clientX - rect.left;
+            dragStartY = touch.clientY - rect.top;
+            
+            // Bring to front
+            stickersPreview.appendChild(draggedSticker);
+            
+            // Ngăn chặn scroll khi kéo sticker
+            e.preventDefault();
+        }, { passive: false });
+        
         stickersPreview.appendChild(stickerDiv);
     }
     
@@ -413,6 +447,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             (collageMode === 'side_by_side' ? 'repeat(2, 1fr)' : 'repeat(2, 1fr)'));
         
         collageContainer.style.gridTemplateColumns = gridTemplate;
+        
+        // Điều chỉnh khoảng cách grid nhỏ hơn trên mobile
+        const isMobile = window.innerWidth <= 480;
+        collageContainer.style.gap = isMobile ? '5px' : '10px';
+        
         if (collageMode === 'strip') {
             collageContainer.style.gridTemplateRows = 'repeat(4, 1fr)';
         }
@@ -421,10 +460,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const cell = document.createElement('div');
             cell.className = 'collage-item';
             
+            // Đặt tỷ lệ khía cạnh cho từng ô
+            if (isMobile) {
+                if (collageMode === 'strip') {
+                    cell.style.aspectRatio = '4/3';
+                    cell.style.minHeight = '60px';
+                } else if (collageMode !== 'side_by_side') {
+                    cell.style.aspectRatio = '1/1';
+                    cell.style.minHeight = '60px';
+                }
+            }
+            
             if (i < collagePhotos.length) {
                 const img = document.createElement('img');
                 img.src = collagePhotos[i].src;
                 img.classList.add(`filter-${collagePhotos[i].filter}`);
+                img.style.objectFit = 'cover';
                 cell.appendChild(img);
             } else {
                 cell.classList.add('empty');
@@ -441,12 +492,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const collageCanvas = document.createElement('canvas');
         const ctx = collageCanvas.getContext('2d');
         
-        // Tạo canvas với kích thước đủ cho 2 ảnh song song và tỷ lệ đẹp
-        const canvasWidth = 1200;  // Chiều rộng cố định
-        const canvasHeight = 600;  // Chiều cao cố định
+        // Điều chỉnh kích thước dựa vào thiết bị
+        const isMobile = window.innerWidth <= 480;
+        
+        // Kích thước canvas tỷ lệ với thiết bị
+        const canvasWidth = isMobile ? 800 : 1200;
+        const canvasHeight = isMobile ? 400 : 600;
         const imageWidth = canvasWidth / 2;
         const imageHeight = canvasHeight;
         
+        // Tạo canvas với kích thước đủ cho 2 ảnh song song và tỷ lệ đẹp
         collageCanvas.width = canvasWidth;
         collageCanvas.height = canvasHeight;
         
@@ -831,7 +886,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    document.addEventListener('mouseup', () => {
+    // THÊM MỚI: Xử lý touch events cho stickers trên mobile
+    document.addEventListener('touchmove', (e) => {
+        if (isDraggingSticker && draggedSticker) {
+            const touch = e.touches[0];
+            const cameraRect = video.getBoundingClientRect();
+            
+            // Calculate new position (relative to camera container)
+            let newX = touch.clientX - dragStartX - cameraRect.left;
+            let newY = touch.clientY - dragStartY - cameraRect.top;
+            
+            // Constrain to camera boundaries
+            newX = Math.max(0, Math.min(newX, cameraRect.width - draggedSticker.offsetWidth));
+            newY = Math.max(0, Math.min(newY, cameraRect.height - draggedSticker.offsetHeight));
+            
+            // Update position
+            draggedSticker.style.left = `${newX}px`;
+            draggedSticker.style.top = `${newY}px`;
+            
+            // Update sticker in activeStickers array
+            const stickerId = parseInt(draggedSticker.id.split('-')[1]);
+            const stickerIndex = activeStickers.findIndex(s => s.id === stickerId);
+            
+            if (stickerIndex !== -1) {
+                activeStickers[stickerIndex].x = newX;
+                activeStickers[stickerIndex].y = newY;
+            }
+            
+            // Ngăn chặn scroll khi kéo sticker
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    document.addEventListener('touchend', () => {
         isDraggingSticker = false;
         draggedSticker = null;
     });
@@ -908,4 +995,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Khởi động camera khi trang được tải
     startCamera();
+    
+    // THÊM MỚI: Xử lý hướng màn hình thay đổi
+    window.addEventListener('orientationchange', function() {
+        // Tạm dừng 500ms để đợi trình duyệt cập nhật kích thước
+        setTimeout(() => {
+            if (collageMode !== 'single' && collagePreview.style.display !== 'none') {
+                updateCollagePreview();
+            }
+        }, 500);
+    });
 });
