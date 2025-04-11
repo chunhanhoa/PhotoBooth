@@ -51,14 +51,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // Kiểm tra nếu là thiết bị mobile
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
+            // Kiểm tra hướng màn hình (portrait/landscape)
+            const isPortrait = window.innerHeight > window.innerWidth;
+            
             // Thiết lập cấu hình camera cải tiến
             const constraints = {
                 video: {
                     facingMode: 'user',
-                    // Đặt kích thước video phù hợp để thấy được toàn thân
-                    width: { ideal: isMobile ? window.innerWidth : 1280 },
-                    // Điều chỉnh chiều cao để nhìn thấy nhiều hơn
-                    height: { ideal: isMobile ? window.innerHeight * 1.5 : 720 }
+                    // Đặt kích thước phù hợp để thấy được nhiều hơn (từ thân người trở lên)
+                    width: { ideal: isMobile ? (isPortrait ? 720 : window.innerWidth) : 1280 },
+                    // Giảm chiều cao cho portrait mode để giảm zoom, tăng cho landscape
+                    height: { ideal: isMobile ? (isPortrait ? 1280 : window.innerHeight) : 720 }
                 }
             };
             
@@ -83,7 +86,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Điều chỉnh hiển thị video trên mobile để thấy nhiều hơn
                 if (isMobile) {
+                    // Đảm bảo hiển thị toàn bộ feed camera thay vì zoom in
                     video.style.objectFit = 'contain';
+                    // Thêm CSS để hiển thị khung hình đẹp hơn
+                    video.style.width = '100%';
+                    video.style.height = '100%';
+                    
+                    // Điều chỉnh zoom mặc định trên mobile để thấy được nhiều hơn
+                    if (isPortrait) {
+                        // Đảm bảo camera hiển thị rõ hơn trên chế độ dọc
+                        video.style.transform += ' scale(0.85)';
+                        
+                        // Cập nhật biến scale nếu đang sử dụng zoom
+                        if (typeof scale !== 'undefined') {
+                            scale = 0.85;
+                        }
+                    }
                     
                     // Hiển thị thông báo để người dùng biết có nút thu phóng
                     if (firstCameraLoad) {
