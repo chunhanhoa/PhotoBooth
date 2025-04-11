@@ -54,14 +54,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Kiểm tra hướng màn hình (portrait/landscape)
             const isPortrait = window.innerHeight > window.innerWidth;
             
-            // Thiết lập cấu hình camera cải tiến cho hiển thị toàn thân
+            // Thiết lập cấu hình camera cải tiến
             const constraints = {
                 video: {
                     facingMode: 'user',
-                    // Điều chỉnh kích thước khung hình để thấy được nhiều nội dung hơn
-                    width: { ideal: isMobile ? (isPortrait ? 540 : window.innerWidth) : 1280 },
-                    // Giảm chiều cao để nhìn thấy được nhiều hơn
-                    height: { ideal: isMobile ? (isPortrait ? 960 : window.innerHeight) : 720 }
+                    // Đặt kích thước phù hợp để thấy được nhiều hơn (từ thân người trở lên)
+                    width: { ideal: isMobile ? (isPortrait ? 720 : window.innerWidth) : 1280 },
+                    // Giảm chiều cao cho portrait mode để giảm zoom, tăng cho landscape
+                    height: { ideal: isMobile ? (isPortrait ? 1280 : window.innerHeight) : 720 }
                 }
             };
             
@@ -88,20 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isMobile) {
                     // Đảm bảo hiển thị toàn bộ feed camera thay vì zoom in
                     video.style.objectFit = 'contain';
+                    // Thêm CSS để hiển thị khung hình đẹp hơn
                     video.style.width = '100%';
                     video.style.height = '100%';
                     
-                    // Thu nhỏ hình ảnh nhiều hơn trong chế độ dọc để thấy được toàn thân
+                    // Điều chỉnh zoom mặc định trên mobile để thấy được nhiều hơn
                     if (isPortrait) {
-                        // Giảm scale xuống nhiều hơn để thấy được cả thân người
-                        video.style.transform += ' scale(0.45)';
-                        
-                        // Định vị lại camera để cân đối hơn
-                        video.style.transformOrigin = 'center center';
+                        // Đảm bảo camera hiển thị rõ hơn trên chế độ dọc
+                        video.style.transform += ' scale(0.85)';
                         
                         // Cập nhật biến scale nếu đang sử dụng zoom
                         if (typeof scale !== 'undefined') {
-                            scale = 0.45;
+                            scale = 0.85;
                         }
                     }
                     
