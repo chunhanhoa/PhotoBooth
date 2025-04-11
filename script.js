@@ -1009,6 +1009,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Thay đổi bộ lọc
     function changeFilter(filterName) {
+        // Xử lý trường hợp thông thường - chọn filter khác
         // Xóa bộ lọc cũ
         video.classList.remove(`filter-${currentFilter}`);
         // Thêm bộ lọc mới
@@ -1024,6 +1025,47 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    
+    document.addEventListener('click', function(e) {
+        // Kiểm tra nếu đang kéo sticker thì dừng kéo khi click
+        if (isDraggingSticker && draggedSticker) {
+            isDraggingSticker = false;
+            draggedSticker = null;
+            return; // Ngăn không cho code dưới thực thi
+        }
+        
+        // Kiểm tra xem click có phải trên filter button hoặc khi filter đang là normal không
+        if (!e.target.closest('.filter-btn') && currentFilter !== 'normal') {
+            // Không làm gì nếu click vào các nút điều khiển khác
+            if (e.target.closest('.btn') || 
+                e.target.closest('.sticker-btn') || 
+                e.target.closest('.sticker') ||
+                e.target.closest('.mode-option')) {
+                return;
+            }
+            
+            // Xóa filter hiện tại
+            video.classList.remove(`filter-${currentFilter}`);
+            // Đặt về filter mặc định
+            currentFilter = 'normal';
+            video.classList.add(`filter-${currentFilter}`);
+            
+            // Cập nhật trạng thái active cho nút normal
+            filterBtns.forEach(btn => {
+                if (btn.dataset.filter === 'normal') {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+    });
+    
+    // Cập nhật xử lý sự kiện mouseup và mousedown
+    document.addEventListener('mouseup', function() {
+        isDraggingSticker = false;
+        draggedSticker = null;
+    });
     
     // Chức năng bật/tắt lật ảnh
     function toggleFlip() {
