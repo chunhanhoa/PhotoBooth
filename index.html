@@ -25,6 +25,12 @@
                         <div class="camera-frame"></div>
                     </div>
                     <div class="stickers-preview" id="stickers-preview"></div>
+                    
+                    <!-- Thêm điều khiển zoom cho camera trên mobile -->
+                    <div class="camera-zoom-controls">
+                        <button class="zoom-btn" id="zoom-in"><i class="fas fa-search-plus"></i></button>
+                        <button class="zoom-btn" id="zoom-out"><i class="fas fa-search-minus"></i></button>
+                    </div>
                 </div>
                 
                 <div class="controls">
@@ -149,6 +155,55 @@
                 el.classList.add('touch-friendly');
             });
             
+            // Hiển thị các nút điều khiển thu phóng
+            const zoomControls = document.querySelector('.camera-zoom-controls');
+            if (zoomControls) {
+                zoomControls.style.display = 'flex';
+                
+                // Xử lý nút thu phóng cải tiến để giữ tỷ lệ khung hình
+                const zoomIn = document.getElementById('zoom-in');
+                const zoomOut = document.getElementById('zoom-out');
+                const camera = document.getElementById('camera');
+                
+                let scale = 1;
+                
+                zoomIn.addEventListener('click', function() {
+                    scale = Math.min(scale + 0.1, 2);
+                    if (document.getElementById('flip').classList.contains('active') || isFlipped) {
+                        camera.style.transform = `scaleX(-1) scale(${scale})`;
+                    } else {
+                        camera.style.transform = `scale(${scale})`;
+                    }
+                });
+                
+                zoomOut.addEventListener('click', function() {
+                    scale = Math.max(scale - 0.1, 0.5);
+                    if (document.getElementById('flip').classList.contains('active') || isFlipped) {
+                        camera.style.transform = `scaleX(-1) scale(${scale})`;
+                    } else {
+                        camera.style.transform = `scale(${scale})`;
+                    }
+                });
+                
+                // Hiển thị tooltip về chức năng thu phóng
+                setTimeout(() => {
+                    const tooltip = document.createElement('div');
+                    tooltip.innerHTML = 'Dùng +/- để điều chỉnh khung hình';
+                    tooltip.style.cssText = `
+                        position: absolute;
+                        bottom: 60px;
+                        right: 10px;
+                        background: rgba(255,255,255,0.8);
+                        padding: 5px 10px;
+                        border-radius: 15px;
+                        font-size: 12px;
+                        z-index: 100;
+                    `;
+                    document.querySelector('.camera-container').appendChild(tooltip);
+                    setTimeout(() => tooltip.remove(), 5000);
+                }, 2000);
+            }
+
             // Thêm nút help
             const helpBtn = document.getElementById('help-btn');
             if (helpBtn) {
@@ -166,6 +221,12 @@
             document.addEventListener('dblclick', function(e) {
                 e.preventDefault();
             });
+        } else {
+            // Ẩn điều khiển zoom trên desktop
+            const zoomControls = document.querySelector('.camera-zoom-controls');
+            if (zoomControls) {
+                zoomControls.style.display = 'none';
+            }
         }
     });
     </script>

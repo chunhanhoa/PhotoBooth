@@ -43,23 +43,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let dragStartX = 0;
     let dragStartY = 0;
     let isFlipped = true; // Mặc định là lật ảnh
+    let firstCameraLoad = true; // Thêm biến toàn cục để kiểm soát tooltip
     
-    // Khởi động camera
+    // Khởi động camera với cấu hình cải thiện
     async function startCamera() {
         try {
             // Kiểm tra nếu là thiết bị mobile
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
-            // Thiết lập cấu hình camera phù hợp với thiết bị
+            // Thiết lập cấu hình camera cải tiến
             const constraints = {
                 video: {
                     facingMode: 'user',
-                    width: isMobile ? 
-                        { ideal: window.innerWidth < window.innerHeight ? window.innerWidth : 720 } : 
-                        { ideal: 1280 },
-                    height: isMobile ? 
-                        { ideal: window.innerWidth < window.innerHeight ? window.innerWidth * 0.75 : 540 } : 
-                        { ideal: 720 }
+                    // Đặt kích thước video phù hợp để thấy được toàn thân
+                    width: { ideal: isMobile ? window.innerWidth : 1280 },
+                    // Điều chỉnh chiều cao để nhìn thấy nhiều hơn
+                    height: { ideal: isMobile ? window.innerHeight * 1.5 : 720 }
                 }
             };
             
@@ -80,6 +79,36 @@ document.addEventListener('DOMContentLoaded', () => {
                     video.style.transform = 'scaleX(-1)';
                 } else {
                     video.style.transform = 'scaleX(1)';
+                }
+                
+                // Điều chỉnh hiển thị video trên mobile để thấy nhiều hơn
+                if (isMobile) {
+                    video.style.objectFit = 'contain';
+                    
+                    // Hiển thị thông báo để người dùng biết có nút thu phóng
+                    if (firstCameraLoad) {
+                        setTimeout(() => {
+                            const tooltip = document.createElement('div');
+                            tooltip.className = 'camera-tooltip';
+                            tooltip.innerHTML = 'Sử dụng nút + và - để điều chỉnh zoom';
+                            tooltip.style.cssText = `
+                                position: absolute;
+                                bottom: 60px;
+                                right: 10px;
+                                background: rgba(255,255,255,0.8);
+                                padding: 8px 12px;
+                                border-radius: 20px;
+                                font-size: 12px;
+                                color: var(--primary-color);
+                                z-index: 100;
+                            `;
+                            document.querySelector('.camera-container').appendChild(tooltip);
+                            
+                            // Tự động ẩn tooltip sau 5 giây
+                            setTimeout(() => tooltip.remove(), 5000);
+                        }, 2000);
+                        firstCameraLoad = false;
+                    }
                 }
             };
             
@@ -115,7 +144,91 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Chức năng chụp ảnh
+    // Hàm thêm khung đẹp cho ảnh đơn
+    function addFrameToPhoto(imgData, filter) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                // Tạo canvas cho ảnh có khung
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Tính toán kích thước thực tế của khung
+                const frameMargin = 40; // khoảng cách khung đến viền
+                const borderWidth = 15;  // độ dày viền ngoài
+                const innerBorderWidth = 3; // độ dày viền trong
+                
+                // Giữ nguyên tỷ lệ ảnh
+                const aspectRatio = img.width / img.height;
+                let canvasWidth, canvasHeight;
+                
+                if (aspectRatio >= 1) {
+                    // Ảnh ngang hoặc vuông
+                    canvasWidth = Math.min(1200, img.width + frameMargin * 2);
+                    canvasHeight = canvasWidth / aspectRatio;
+                } else {
+                    // Ảnh dọc
+                    canvasHeight = Math.min(1200, img.height + frameMargin * 2);
+                    canvasWidth = canvasHeight * aspectRatio;
+                }
+                
+                // Thêm lề cho khung
+                canvas.width = canvasWidth + frameMargin * 2;
+                canvas.height = canvasHeight + frameMargin * 2;
+                
+                // Vẽ nền màu pastel
+                ctx.fillStyle = '#ffeaf7';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Vẽ khung ngoài với gradient
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                gradient.addColorStop(0, '#ff9ed4');
+                gradient.addColorStop(0.5, '#ffb6e1');
+                gradient.addColorStop(1, '#ff9ed4');
+                
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = borderWidth;
+                ctx.strokeRect(borderWidth/2, borderWidth/2, 
+                               canvas.width - borderWidth, canvas.height - borderWidth);
+                
+                // Vẽ khung trong
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = innerBorderWidth;
+                ctx.strokeRect(frameMargin/2, frameMargin/2, 
+                               canvas.width - frameMargin, canvas.height - frameMargin);
+                
+                // Vẽ ảnh vào giữa khung - đảm bảo giữ nguyên tỷ lệ và vừa khít
+                const imageWidth = canvas.width - frameMargin * 2;
+                const imageHeight = canvas.height - frameMargin * 2;
+                ctx.drawImage(img, frameMargin, frameMargin, imageWidth, imageHeight);
+                
+                // Thêm ngày tháng
+                ctx.font = 'bold 16px Quicksand, sans-serif';
+                ctx.fillStyle = '#ff6eb5';
+                ctx.textAlign = 'right';
+                
+                const today = new Date();
+                const dateStr = today.toLocaleDateString('vi-VN', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                ctx.fillText(dateStr, canvas.width - 25, canvas.height - 25);
+                
+                // Thêm nhãn PhotoBooth
+                ctx.font = 'italic 14px Quicksand, sans-serif';
+                ctx.fillStyle = 'rgba(255, 110, 181, 0.7)';
+                ctx.textAlign = 'left';
+                ctx.fillText('PhotoBooth', 25, canvas.height - 25);
+                
+                resolve(canvas.toDataURL('image/png'));
+            };
+            img.src = imgData;
+        });
+    }
+    
+    // Chức năng chụp ảnh với thêm khung (thay thế phần chụp ảnh đơn)
     async function capturePhoto() {
         captureBtn.disabled = true;
         
@@ -176,10 +289,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const imgData = canvas.toDataURL('image/png');
         
         if (collageMode === 'single') {
+            // Thêm khung đẹp cho ảnh đơn
+            const framedImgData = await addFrameToPhoto(imgData, currentFilter);
+            
             photosTaken.push({
-                src: imgData,
+                src: framedImgData,
                 filter: currentFilter,
-                date: new Date().toISOString()
+                date: new Date().toISOString(),
+                isFramed: true
             });
             
             // Hiển thị ảnh đã chụp
@@ -487,21 +604,16 @@ document.addEventListener('DOMContentLoaded', () => {
         collagePreview.style.display = 'block';
     }
     
-    // Tạo ảnh ghép 2 ảnh song song
+    // Tạo ảnh ghép 2 ảnh song song - thiết kế đồng bộ với ảnh đơn
     function createSideBySideImage() {
         const collageCanvas = document.createElement('canvas');
         const ctx = collageCanvas.getContext('2d');
         
-        // Điều chỉnh kích thước dựa vào thiết bị
-        const isMobile = window.innerWidth <= 480;
+        // Tạo canvas với kích thước cố định, đảm bảo tỷ lệ đẹp
+        const canvasWidth = 1200;  // Chiều rộng cố định
+        const canvasHeight = 600;  // Chiều cao cố định 
+        const frameMargin = 40;    // Khoảng cách từ viền đến ảnh
         
-        // Kích thước canvas tỷ lệ với thiết bị
-        const canvasWidth = isMobile ? 800 : 1200;
-        const canvasHeight = isMobile ? 400 : 600;
-        const imageWidth = canvasWidth / 2;
-        const imageHeight = canvasHeight;
-        
-        // Tạo canvas với kích thước đủ cho 2 ảnh song song và tỷ lệ đẹp
         collageCanvas.width = canvasWidth;
         collageCanvas.height = canvasHeight;
         
@@ -509,42 +621,73 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = '#ffeaf7';
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
         
-        // Vẽ khung ngoài
-        ctx.strokeStyle = '#ff9ed4';
-        ctx.lineWidth = 10;
-        ctx.strokeRect(5, 5, canvasWidth - 10, canvasHeight - 10);
+        // Vẽ khung ngoài - giống chế độ đơn
+        const outerBorderWidth = 15;
+        const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+        gradient.addColorStop(0, '#ff9ed4');
+        gradient.addColorStop(0.5, '#ffb6e1');
+        gradient.addColorStop(1, '#ff9ed4');
         
-        // Vẽ từng ảnh với đúng tỷ lệ và fit vào khung
+        ctx.lineWidth = outerBorderWidth;
+        ctx.strokeStyle = gradient;
+        ctx.strokeRect(outerBorderWidth/2, outerBorderWidth/2, 
+                     canvasWidth - outerBorderWidth, canvasHeight - outerBorderWidth);
+        
+        // Vẽ khung thứ hai mỏng bên trong
+        const innerBorderWidth = 3;
+        ctx.lineWidth = innerBorderWidth;
+        ctx.strokeStyle = 'white';
+        ctx.strokeRect(frameMargin/2, frameMargin/2, 
+                     canvasWidth - frameMargin, canvasHeight - frameMargin);
+        
+        // Tính toán khu vực cho mỗi ảnh
+        const middleX = canvasWidth / 2;
+        const imageAreaWidth = (canvasWidth - frameMargin * 2) / 2;
+        const imageAreaHeight = canvasHeight - frameMargin * 2;
+        
+        // Vẽ đường phân cách ở giữa
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+        ctx.beginPath();
+        ctx.moveTo(middleX, frameMargin);
+        ctx.lineTo(middleX, canvasHeight - frameMargin);
+        ctx.stroke();
+        
+        // Vẽ từng ảnh vào đúng nửa của khung
         const promises = collagePhotos.map((photo, index) => {
             return new Promise((resolve) => {
                 const img = new Image();
                 img.onload = () => {
-                    const x = index * imageWidth;
+                    // Xác định vị trí và kích thước cho ảnh này
+                    const x = index === 0 ? frameMargin : middleX + 1;  // +1px để tránh chồng lên đường phân cách
+                    const areaWidth = imageAreaWidth - (index === 0 ? 2 : 1);  // Điều chỉnh để tránh đè lên đường phân cách
                     
                     // Vẽ khung cho mỗi ảnh
-                    ctx.strokeStyle = '#ffffff';
-                    ctx.lineWidth = 4;
-                    ctx.strokeRect(x + 5, 5, imageWidth - 10, imageHeight - 10);
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#ffffff88';
+                    const frameX = index === 0 ? frameMargin : middleX + 1;
+                    ctx.strokeRect(frameX, frameMargin, areaWidth, imageAreaHeight);
                     
-                    // Tính toán để ảnh fit trong khung
+                    // Tính toán kích thước và vị trí để ảnh vừa khít vào khung
                     const aspectRatio = img.width / img.height;
-                    let drawWidth, drawHeight;
+                    let drawWidth, drawHeight, drawX, drawY;
                     
-                    if (aspectRatio > imageWidth / imageHeight) {
-                        // Ảnh rộng hơn tỷ lệ khung
-                        drawWidth = imageWidth - 20;
+                    // Phương pháp FIT thay vì COVER để đảm bảo thấy toàn bộ ảnh
+                    if (aspectRatio > areaWidth / imageAreaHeight) {
+                        // Ảnh rộng hơn khung theo tỷ lệ
+                        drawWidth = areaWidth - 10;
                         drawHeight = drawWidth / aspectRatio;
+                        drawX = x + 5;
+                        drawY = frameMargin + (imageAreaHeight - drawHeight) / 2;
                     } else {
-                        // Ảnh cao hơn tỷ lệ khung
-                        drawHeight = imageHeight - 20;
+                        // Ảnh cao hơn khung theo tỷ lệ
+                        drawHeight = imageAreaHeight - 10;
                         drawWidth = drawHeight * aspectRatio;
+                        drawX = x + (areaWidth - drawWidth) / 2;
+                        drawY = frameMargin + 5;
                     }
                     
-                    // Căn giữa ảnh trong ô
-                    const offsetX = x + (imageWidth - drawWidth) / 2;
-                    const offsetY = (imageHeight - drawHeight) / 2;
-                    
-                    // Áp dụng bộ lọc
+                    // Áp dụng bộ lọc trước khi vẽ ảnh
                     if (photo.filter !== 'normal') {
                         ctx.save();
                         const filterMap = {
@@ -555,12 +698,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             'pastel': 'brightness(1.1) saturate(1.3) contrast(0.9)',
                             'cute': 'brightness(1.1) saturate(1.5) contrast(0.85) hue-rotate(10deg)'
                         };
-                        
                         ctx.filter = filterMap[photo.filter] || 'none';
                     }
                     
-                    // Vẽ ảnh vừa khít với khung
-                    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+                    // Vẽ ảnh với các thông số đã tính
+                    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
                     
                     if (photo.filter !== 'normal') {
                         ctx.restore();
@@ -574,18 +716,24 @@ document.addEventListener('DOMContentLoaded', () => {
         
         Promise.all(promises).then(() => {
             // Thêm ngày tháng
-            ctx.font = '16px Quicksand, sans-serif';
+            ctx.font = 'bold 16px Quicksand, sans-serif';
             ctx.fillStyle = '#ff6eb5';
             ctx.textAlign = 'right';
             
             const today = new Date();
             const dateStr = today.toLocaleDateString('vi-VN', {
-                year: 'numeric', 
-                month: 'short', 
+                year: 'numeric',
+                month: 'short',
                 day: 'numeric'
             });
             
-            ctx.fillText(dateStr, canvasWidth - 20, canvasHeight - 20);
+            ctx.fillText(dateStr, canvasWidth - 25, canvasHeight - 25);
+            
+            // Thêm nhãn PhotoBooth
+            ctx.font = 'italic 14px Quicksand, sans-serif';
+            ctx.fillStyle = 'rgba(255, 110, 181, 0.7)';
+            ctx.textAlign = 'left';
+            ctx.fillText('PhotoBooth', 25, canvasHeight - 25);
             
             // Lưu ảnh ghép vào photosTaken
             const collageData = collageCanvas.toDataURL('image/png');
@@ -593,7 +741,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 src: collageData,
                 filter: 'normal',
                 date: new Date().toISOString(),
-                isCollage: true
+                isCollage: true,
+                isFramed: true
             });
             
             // Hiển thị trong gallery
@@ -618,6 +767,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const collageCanvas = document.createElement('canvas');
         const ctx = collageCanvas.getContext('2d');
         
+        // Xác định số hàng và cột dựa trên chế độ
         let rows, cols;
         if (collageMode === 'collage_2x2') {
             rows = 2;
@@ -630,26 +780,51 @@ document.addEventListener('DOMContentLoaded', () => {
             cols = 1;
         }
         
-        // Điều chỉnh kích thước cho phù hợp với tỷ lệ
-        const cellWidth = 300;
-        const cellHeight = collageMode === 'strip' ? 200 : 300;
+        // Xác định kích thước toàn cục của collage
+        let canvasWidth, canvasHeight;
+        const frameMargin = 40;
+        const cellSpacing = 10;  // Khoảng cách giữa các ô
         
-        const collageWidth = cellWidth * cols;
-        const collageHeight = cellHeight * rows;
+        if (collageMode === 'strip') {
+            canvasWidth = 600;
+            canvasHeight = 1200;
+        } else if (collageMode === 'collage_3x3') {
+            canvasWidth = canvasHeight = 900;
+        } else { // 2x2
+            canvasWidth = canvasHeight = 800;
+        }
         
-        collageCanvas.width = collageWidth;
-        collageCanvas.height = collageHeight;
+        collageCanvas.width = canvasWidth;
+        collageCanvas.height = canvasHeight;
         
-        // Fill background (màu pastel dễ thương)
+        // Fill background với màu pastel
         ctx.fillStyle = '#ffeaf7';
-        ctx.fillRect(0, 0, collageWidth, collageHeight);
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
         
-        // Vẽ khung và trang trí
-        ctx.strokeStyle = '#ff9ed4';
-        ctx.lineWidth = 10;
-        ctx.strokeRect(5, 5, collageWidth - 10, collageHeight - 10);
+        // Vẽ khung ngoài - giống chế độ đơn
+        const outerBorderWidth = 15;
+        const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+        gradient.addColorStop(0, '#ff9ed4');
+        gradient.addColorStop(0.5, '#ffb6e1');
+        gradient.addColorStop(1, '#ff9ed4');
         
-        // Vẽ từng ảnh
+        ctx.lineWidth = outerBorderWidth;
+        ctx.strokeStyle = gradient;
+        ctx.strokeRect(outerBorderWidth/2, outerBorderWidth/2, 
+                     canvasWidth - outerBorderWidth, canvasHeight - outerBorderWidth);
+        
+        // Vẽ khung thứ hai mỏng bên trong
+        const innerBorderWidth = 3;
+        ctx.lineWidth = innerBorderWidth;
+        ctx.strokeStyle = 'white';
+        ctx.strokeRect(frameMargin/2, frameMargin/2, 
+                     canvasWidth - frameMargin, canvasHeight - frameMargin);
+        
+        // Tính kích thước và vị trí cho từng ô ảnh
+        const cellWidth = (canvasWidth - frameMargin * 2 - cellSpacing * (cols - 1)) / cols;
+        const cellHeight = (canvasHeight - frameMargin * 2 - cellSpacing * (rows - 1)) / rows;
+        
+        // Vẽ từng ảnh vào grid 
         const promises = collagePhotos.map((photo, i) => {
             return new Promise((resolve) => {
                 const row = Math.floor(i / cols);
@@ -657,31 +832,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const img = new Image();
                 img.onload = () => {
-                    const x = col * cellWidth;
-                    const y = row * cellHeight;
+                    // Xác định vị trí từng ô
+                    const x = frameMargin + col * (cellWidth + cellSpacing);
+                    const y = frameMargin + row * (cellHeight + cellSpacing);
                     
-                    // Vẽ khung cho mỗi ảnh
-                    ctx.strokeStyle = '#ffffff';
-                    ctx.lineWidth = 4;
-                    ctx.strokeRect(x + 5, y + 5, cellWidth - 10, cellHeight - 10);
+                    // Vẽ khung mỏng cho từng ô ảnh
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = '#ffffff88';
+                    ctx.strokeRect(x, y, cellWidth, cellHeight);
                     
-                    // Tính toán để ảnh fit hoàn toàn vào khung, giữ nguyên tỷ lệ
+                    // Tính kích thước và vị trí để ảnh vừa khít vào khung
                     const aspectRatio = img.width / img.height;
-                    let drawWidth, drawHeight;
+                    let drawWidth, drawHeight, drawX, drawY;
                     
+                    // Phương pháp FIT thay vì COVER để đảm bảo thấy toàn bộ ảnh
                     if (aspectRatio > cellWidth / cellHeight) {
-                        // Ảnh rộng hơn tỷ lệ ô
-                        drawWidth = cellWidth - 20;
+                        // Ảnh rộng hơn khung theo tỷ lệ
+                        drawWidth = cellWidth - 10;
                         drawHeight = drawWidth / aspectRatio;
+                        drawX = x + 5;
+                        drawY = y + (cellHeight - drawHeight) / 2;
                     } else {
-                        // Ảnh cao hơn tỷ lệ ô
-                        drawHeight = cellHeight - 20;
+                        // Ảnh cao hơn khung theo tỷ lệ
+                        drawHeight = cellHeight - 10;
                         drawWidth = drawHeight * aspectRatio;
+                        drawX = x + (cellWidth - drawWidth) / 2;
+                        drawY = y + 5;
                     }
-                    
-                    // Vị trí căn giữa trong ô
-                    const offsetX = x + (cellWidth - drawWidth) / 2;
-                    const offsetY = y + (cellHeight - drawHeight) / 2;
                     
                     // Áp dụng bộ lọc
                     if (photo.filter !== 'normal') {
@@ -694,17 +871,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             'pastel': 'brightness(1.1) saturate(1.3) contrast(0.9)',
                             'cute': 'brightness(1.1) saturate(1.5) contrast(0.85) hue-rotate(10deg)'
                         };
-                        
                         ctx.filter = filterMap[photo.filter] || 'none';
                     }
                     
-                    ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-                    
-                    // Thêm hiệu ứng đổ bóng
-                    ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
-                    ctx.shadowBlur = 10;
-                    ctx.shadowOffsetX = 2;
-                    ctx.shadowOffsetY = 2;
+                    // Vẽ ảnh - đảm bảo vừa khít với khung
+                    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
                     
                     if (photo.filter !== 'normal') {
                         ctx.restore();
@@ -716,21 +887,26 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
         
-        // Khi tất cả ảnh đã được vẽ
         Promise.all(promises).then(() => {
-            // Thêm ngày tháng và trang trí
-            ctx.font = '16px Quicksand, sans-serif';
+            // Thêm ngày tháng
+            ctx.font = 'bold 16px Quicksand, sans-serif';
             ctx.fillStyle = '#ff6eb5';
             ctx.textAlign = 'right';
             
             const today = new Date();
             const dateStr = today.toLocaleDateString('vi-VN', {
-                year: 'numeric', 
-                month: 'short', 
+                year: 'numeric',
+                month: 'short',
                 day: 'numeric'
             });
             
-            ctx.fillText(dateStr, collageWidth - 20, collageHeight - 20);
+            ctx.fillText(dateStr, canvasWidth - 25, canvasHeight - 25);
+            
+            // Thêm nhãn PhotoBooth
+            ctx.font = 'italic 14px Quicksand, sans-serif';
+            ctx.fillStyle = 'rgba(255, 110, 181, 0.7)';
+            ctx.textAlign = 'left';
+            ctx.fillText('PhotoBooth', 25, canvasHeight - 25);
             
             // Lưu collage vào photosTaken
             const collageData = collageCanvas.toDataURL('image/png');
@@ -738,7 +914,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 src: collageData,
                 filter: 'normal',
                 date: new Date().toISOString(),
-                isCollage: true
+                isCollage: true,
+                isFramed: true
             });
             
             // Hiển thị trong gallery
@@ -764,13 +941,18 @@ document.addEventListener('DOMContentLoaded', () => {
         displayPhotos();
     }
     
-    // Tải xuống một ảnh cụ thể
+    // Điều chỉnh hàm tải xuống để giữ nguyên tỷ lệ ảnh
     function downloadSinglePhoto(index) {
         const link = document.createElement('a');
         link.href = photosTaken[index].src;
+        
+        // Đặt tên file với thông tin phù hợp
         link.download = photosTaken[index].isCollage 
             ? `collage_${Date.now()}.png` 
-            : `photo_${Date.now()}.png`;
+            : (photosTaken[index].isFramed 
+                ? `photo_framed_${Date.now()}.png` 
+                : `photo_${Date.now()}.png`);
+                
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
