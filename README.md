@@ -2,7 +2,7 @@
 
 https://chunhanhoa.github.io/PhotoBooth
 
-Đây là ứng dụng web PhotoBooth cho phép bạn chụp ảnh trực tiếp từ webcam, áp dụng các bộ lọc và tải xuống ảnh đã chụp.
+Đây là ứng dụng Web PhotoBooth cho phép bạn chụp ảnh trực tiếp từ webcam, áp dụng các bộ lọc và tải xuống ảnh đã chụp.
 
 ## Tính năng
 
@@ -14,7 +14,7 @@ https://chunhanhoa.github.io/PhotoBooth
 
 ## Cách sử dụng
 
-1. Mở trang web
+1. Mở trang Web
 2. Cho phép truy cập webcam khi được yêu cầu
 3. Chọn bộ lọc nếu muốn
 4. Nhấn nút "Chụp ảnh"
