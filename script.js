@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Chức năng chụp ảnh với thêm khung (thay thế phần chụp ảnh đơn)
+    // Chức năng chụp ảnh với thêm khung
     async function capturePhoto() {
         captureBtn.disabled = true;
         
@@ -245,20 +245,37 @@ document.addEventListener('DOMContentLoaded', () => {
         
         context.save();
         
-        // Xử lý lật ảnh dựa vào trạng thái isFlipped
+        // Xử lý lật ảnh dựa vào trạng thái hiển thị camera
+        // Nếu người dùng nhìn thấy hình ảnh lật, chúng ta sẽ lật ngược lại để kết quả giống với cái họ thấy
         if (isFlipped) {
             // Lật ảnh ngang
             context.scale(-1, 1);
             context.translate(-canvas.width, 0);
         }
         
+        // Vẽ hình ảnh từ video lên canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        // Áp dụng bộ lọc vào canvas
+        // Khôi phục trạng thái canvas trước khi áp dụng bộ lọc
+        context.restore();
+        
+        // Áp dụng bộ lọc vào canvas - cải tiến để không ảnh hưởng đến trạng thái lật
         if (currentFilter !== 'normal') {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempContext = tempCanvas.getContext('2d');
+            
+            // Copy ảnh từ canvas gốc sang canvas tạm
+            tempContext.drawImage(canvas, 0, 0);
+            
+            // Xóa canvas gốc
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Áp dụng filter và vẽ từ canvas tạm sang canvas gốc
             const filterStyle = getComputedStyle(video).filter;
             context.filter = filterStyle;
-            context.drawImage(canvas, 0, 0);
+            context.drawImage(tempCanvas, 0, 0);
             context.filter = 'none';
         }
         
@@ -283,10 +300,11 @@ document.addEventListener('DOMContentLoaded', () => {
             drawStickersOnCanvas();
         }
         
-        context.restore();
-        
         // Chuyển đổi sang base64 và lưu
         const imgData = canvas.toDataURL('image/png');
+        
+        // Lưu trạng thái isFlipped là false vì ảnh đã được xử lý lật trong canvas
+        const photoIsFlipped = false;
         
         if (collageMode === 'single') {
             // Thêm khung đẹp cho ảnh đơn
@@ -296,7 +314,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 src: framedImgData,
                 filter: currentFilter,
                 date: new Date().toISOString(),
-                isFramed: true
+                isFramed: true,
+                isFlipped: photoIsFlipped
             });
             
             // Hiển thị ảnh đã chụp
@@ -310,7 +329,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Xử lý chế độ chụp 2 ảnh song song
             collagePhotos.push({
                 src: imgData,
-                filter: currentFilter
+                filter: currentFilter,
+                isFlipped: photoIsFlipped  // Ảnh không cần lật thêm
             });
             
             if (collagePhotos.length === 2) {
@@ -323,7 +343,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Thêm vào bộ sưu tập collage
             collagePhotos.push({
                 src: imgData,
-                filter: currentFilter
+                filter: currentFilter,
+                isFlipped: photoIsFlipped  // Ảnh không cần lật thêm
             });
             
             // Nếu đã đủ số lượng ảnh cho collage
@@ -364,7 +385,6 @@ document.addEventListener('DOMContentLoaded', () => {
         stickerDiv.id = `sticker-${stickerId}`;
         stickerDiv.style.top = '50px';
         stickerDiv.style.left = '50px';
-        
         const img = document.createElement('img');
         img.src = `stickers/${stickerName}.png`;
         img.id = `sticker-img-${stickerId}`;
@@ -402,7 +422,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const aspectRatio = img.naturalWidth / img.naturalHeight;
             const stickerWidth = 100;
             const stickerHeight = stickerWidth / aspectRatio;
-            
             stickerDiv.style.width = stickerWidth + 'px';
             stickerDiv.style.height = stickerHeight + 'px';
             
@@ -443,13 +462,11 @@ document.addEventListener('DOMContentLoaded', () => {
         stickerDiv.addEventListener('mousedown', (e) => {
             // Không kích hoạt kéo thả nếu đang nhấn vào nút điều khiển
             if (e.target.closest('.sticker-btn-control')) return;
-            
             isDraggingSticker = true;
             draggedSticker = stickerDiv;
             const rect = draggedSticker.getBoundingClientRect();
             dragStartX = e.clientX - rect.left;
             dragStartY = e.clientY - rect.top;
-            
             // Bring to front
             stickersPreview.appendChild(draggedSticker);
         });
@@ -458,18 +475,14 @@ document.addEventListener('DOMContentLoaded', () => {
         stickerDiv.addEventListener('touchstart', (e) => {
             // Không kích hoạt kéo thả nếu đang chạm vào nút điều khiển
             if (e.target.closest('.sticker-btn-control')) return;
-            
             isDraggingSticker = true;
             draggedSticker = stickerDiv;
-            
             const touch = e.touches[0];
             const rect = draggedSticker.getBoundingClientRect();
             dragStartX = touch.clientX - rect.left;
             dragStartY = touch.clientY - rect.top;
-            
             // Bring to front
             stickersPreview.appendChild(draggedSticker);
-            
             // Ngăn chặn scroll khi kéo sticker
             e.preventDefault();
         }, { passive: false });
@@ -481,18 +494,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function resizeSticker(stickerId, scale) {
         const stickerDiv = document.getElementById(`sticker-${stickerId}`);
         const stickerIndex = activeStickers.findIndex(s => s.id === stickerId);
-        
         if (stickerDiv && stickerIndex !== -1) {
             const sticker = activeStickers[stickerIndex];
-            
             // Tính toán kích thước mới
             const newWidth = Math.max(30, Math.min(300, sticker.width * scale));
             const newHeight = newWidth / sticker.aspectRatio;
-            
             // Cập nhật kích thước trong DOM
             stickerDiv.style.width = newWidth + 'px';
             stickerDiv.style.height = newHeight + 'px';
-            
             // Cập nhật kích thước trong mảng stickers
             activeStickers[stickerIndex].width = newWidth;
             activeStickers[stickerIndex].height = newHeight;
@@ -505,7 +514,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (stickerDiv) {
             stickerDiv.remove();
         }
-        
         // Xóa sticker khỏi mảng activeStickers
         const stickerIndex = activeStickers.findIndex(s => s.id === stickerId);
         if (stickerIndex !== -1) {
@@ -516,24 +524,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hiển thị ảnh đã chụp
     function displayPhotos() {
         photosContainer.innerHTML = '';
-        
         photosTaken.forEach((photo, index) => {
             const photoDiv = document.createElement('div');
             photoDiv.className = 'photo-item';
-            
             const img = document.createElement('img');
             img.src = photo.src;
             img.alt = `Ảnh ${index + 1}`;
             img.classList.add(`filter-${photo.filter}`);
-            
             const overlay = document.createElement('div');
             overlay.className = 'photo-overlay';
-            
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'delete-btn';
             deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
             deleteBtn.onclick = () => deletePhoto(index);
-            
             const downloadBtn = document.createElement('button');
             downloadBtn.className = 'download-btn';
             downloadBtn.innerHTML = '<i class="fas fa-download"></i>';
@@ -541,10 +544,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.stopPropagation();
                 downloadSinglePhoto(index);
             };
-            
             overlay.appendChild(downloadBtn);
             overlay.appendChild(deleteBtn);
-            
             photoDiv.appendChild(img);
             photoDiv.appendChild(overlay);
             photosContainer.appendChild(photoDiv);
@@ -554,21 +555,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tạo và hiển thị collage preview
     function updateCollagePreview() {
         collageContainer.innerHTML = '';
-        
         const totalCells = collageMode === 'collage_2x2' ? 4 : 
                            (collageMode === 'collage_3x3' ? 9 : 
                            (collageMode === 'side_by_side' ? 2 : 4));
-                           
         const gridTemplate = collageMode === 'collage_3x3' ? 'repeat(3, 1fr)' : 
                             (collageMode === 'strip' ? '1fr' : 
                             (collageMode === 'side_by_side' ? 'repeat(2, 1fr)' : 'repeat(2, 1fr)'));
-        
         collageContainer.style.gridTemplateColumns = gridTemplate;
         
         // Điều chỉnh khoảng cách grid nhỏ hơn trên mobile
         const isMobile = window.innerWidth <= 480;
         collageContainer.style.gap = isMobile ? '5px' : '10px';
-        
         if (collageMode === 'strip') {
             collageContainer.style.gridTemplateRows = 'repeat(4, 1fr)';
         }
@@ -576,7 +573,6 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < totalCells; i++) {
             const cell = document.createElement('div');
             cell.className = 'collage-item';
-            
             // Đặt tỷ lệ khía cạnh cho từng ô
             if (isMobile) {
                 if (collageMode === 'strip') {
@@ -587,7 +583,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     cell.style.minHeight = '60px';
                 }
             }
-            
             if (i < collagePhotos.length) {
                 const img = document.createElement('img');
                 img.src = collagePhotos[i].src;
@@ -597,10 +592,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 cell.classList.add('empty');
             }
-            
             collageContainer.appendChild(cell);
         }
-        
         collagePreview.style.display = 'block';
     }
     
@@ -687,9 +680,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         drawY = frameMargin + 5;
                     }
                     
-                    // Áp dụng bộ lọc trước khi vẽ ảnh
+                    // Áp dụng bộ lọc và xử lý lật ảnh
+                    ctx.save();
+                    
+                    // Không cần lật ảnh vì đã xử lý trong capturePhoto
+                    
+                    // Áp dụng bộ lọc
                     if (photo.filter !== 'normal') {
-                        ctx.save();
                         const filterMap = {
                             'grayscale': 'grayscale(100%)',
                             'sepia': 'sepia(100%)',
@@ -704,9 +701,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Vẽ ảnh với các thông số đã tính
                     ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
                     
-                    if (photo.filter !== 'normal') {
-                        ctx.restore();
-                    }
+                    ctx.restore();
                     
                     resolve();
                 };
@@ -860,9 +855,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         drawY = y + 5;
                     }
                     
+                    // Lưu trạng thái canvas trước khi áp dụng các hiệu ứng
+                    ctx.save();
+                    
+                    // Không cần lật ảnh vì đã được xử lý trong capturePhoto
+                    
                     // Áp dụng bộ lọc
                     if (photo.filter !== 'normal') {
-                        ctx.save();
                         const filterMap = {
                             'grayscale': 'grayscale(100%)',
                             'sepia': 'sepia(100%)',
@@ -877,9 +876,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Vẽ ảnh - đảm bảo vừa khít với khung
                     ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
                     
-                    if (photo.filter !== 'normal') {
-                        ctx.restore();
-                    }
+                    // Khôi phục trạng thái canvas
+                    ctx.restore();
                     
                     resolve();
                 };
@@ -935,30 +933,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Xóa ảnh
+    // Các hàm tiện ích khác
     function deletePhoto(index) {
         photosTaken.splice(index, 1);
         displayPhotos();
     }
     
-    // Điều chỉnh hàm tải xuống để giữ nguyên tỷ lệ ảnh
     function downloadSinglePhoto(index) {
         const link = document.createElement('a');
         link.href = photosTaken[index].src;
-        
-        // Đặt tên file với thông tin phù hợp
         link.download = photosTaken[index].isCollage 
             ? `collage_${Date.now()}.png` 
             : (photosTaken[index].isFramed 
                 ? `photo_framed_${Date.now()}.png` 
                 : `photo_${Date.now()}.png`);
-                
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
     
-    // Tải xuống ảnh mới nhất
     function downloadPhoto() {
         if (photosTaken.length > 0) {
             const photo = photosTaken[photosTaken.length - 1];
@@ -973,23 +966,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Chụp lại
     function retake() {
         retakeBtn.style.display = 'none';
         captureBtn.style.display = 'block';
         captureBtn.disabled = false;
-        
-        // Xóa tất cả stickers
         stickersPreview.innerHTML = '';
         activeStickers = [];
     }
     
-    // Bắt đầu chế độ ghép ảnh
     function startCollageMode() {
-        // Reset collage photos
         collagePhotos = [];
-        
-        // Get selected mode
         const selectedMode = document.querySelector('input[name="mode"]:checked').value;
         collageMode = selectedMode;
         
@@ -998,7 +984,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Hủy chế độ ghép ảnh
     function cancelCollage() {
         collagePhotos = [];
         collagePreview.style.display = 'none';
@@ -1061,13 +1046,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Cập nhật xử lý sự kiện mouseup và mousedown
     document.addEventListener('mouseup', function() {
         isDraggingSticker = false;
         draggedSticker = null;
     });
     
-    // Chức năng bật/tắt lật ảnh
     function toggleFlip() {
         isFlipped = !isFlipped;
         
@@ -1086,11 +1069,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mousemove', (e) => {
         if (isDraggingSticker && draggedSticker) {
             const cameraRect = video.getBoundingClientRect();
-            
             // Calculate new position (relative to camera container)
             let newX = e.clientX - dragStartX - cameraRect.left;
             let newY = e.clientY - dragStartY - cameraRect.top;
-            
             // Constrain to camera boundaries
             newX = Math.max(0, Math.min(newX, cameraRect.width - draggedSticker.offsetWidth));
             newY = Math.max(0, Math.min(newY, cameraRect.height - draggedSticker.offsetHeight));
@@ -1102,7 +1083,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update sticker in activeStickers array
             const stickerId = parseInt(draggedSticker.id.split('-')[1]);
             const stickerIndex = activeStickers.findIndex(s => s.id === stickerId);
-            
             if (stickerIndex !== -1) {
                 activeStickers[stickerIndex].x = newX;
                 activeStickers[stickerIndex].y = newY;
@@ -1115,11 +1095,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isDraggingSticker && draggedSticker) {
             const touch = e.touches[0];
             const cameraRect = video.getBoundingClientRect();
-            
             // Calculate new position (relative to camera container)
             let newX = touch.clientX - dragStartX - cameraRect.left;
             let newY = touch.clientY - dragStartY - cameraRect.top;
-            
             // Constrain to camera boundaries
             newX = Math.max(0, Math.min(newX, cameraRect.width - draggedSticker.offsetWidth));
             newY = Math.max(0, Math.min(newY, cameraRect.height - draggedSticker.offsetHeight));
@@ -1131,12 +1109,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update sticker in activeStickers array
             const stickerId = parseInt(draggedSticker.id.split('-')[1]);
             const stickerIndex = activeStickers.findIndex(s => s.id === stickerId);
-            
             if (stickerIndex !== -1) {
                 activeStickers[stickerIndex].x = newX;
                 activeStickers[stickerIndex].y = newY;
             }
-            
             // Ngăn chặn scroll khi kéo sticker
             e.preventDefault();
         }
@@ -1178,17 +1154,10 @@ document.addEventListener('DOMContentLoaded', () => {
     downloadBtn.addEventListener('click', downloadPhoto);
     retakeBtn.addEventListener('click', retake);
     flipButton.addEventListener('click', toggleFlip);
-    
-    collageBtn.addEventListener('click', () => {
-        startCollageMode();
+    collageBtn.addEventListener('click', () => { startCollageMode(); });
+    finishCollageBtn.addEventListener('click', () => { 
+        if (collagePhotos.length > 0) { createCollage(); }
     });
-    
-    finishCollageBtn.addEventListener('click', () => {
-        if (collagePhotos.length > 0) {
-            createCollage();
-        }
-    });
-    
     cancelCollageBtn.addEventListener('click', cancelCollage);
     
     filterBtns.forEach(btn => {
@@ -1220,7 +1189,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Khởi động camera khi trang được tải
     startCamera();
     
-    // THÊM MỚI: Xử lý hướng màn hình thay đổi
+    // Xử lý hướng màn hình thay đổi
     window.addEventListener('orientationchange', function() {
         // Tạm dừng 500ms để đợi trình duyệt cập nhật kích thước
         setTimeout(() => {
