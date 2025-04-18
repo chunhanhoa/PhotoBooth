@@ -1,5 +1,6 @@
 # 📸 PhotoBooth
 
+Bạn có thể truy cập dự án tại đây:
 🔗 [PhotoBooth](https://chunhanhoa.github.io/PhotoBooth)
 
 **PhotoBooth** là một ứng dụng web cho phép bạn chụp ảnh trực tiếp từ webcam (Laptop, Desktop), áp dụng các bộ lọc thú vị và tải xuống ảnh đã chụp.
