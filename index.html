@@ -6,11 +6,12 @@
     <title>PhotoBooth</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📸</text></svg>">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>PhotoBooth - c.nhoa <i class="fas fa-camera-retro"></i></h1>
+            <h1>PhotoBooth - <a href="https://www.instagram.com/c.nhoa/" target="_blank">c.nhoa</a> <i class="fas fa-camera-retro"></i></h1>
             <p>Lưu giữ khoảnh khắc đẹp của bạn</p>
         </header>
         
@@ -26,69 +27,81 @@
                     </div>
                     <div class="stickers-preview" id="stickers-preview"></div>
                     
-                    <!-- Thêm điều khiển zoom cho camera trên mobile -->
+                    <!-- Điều khiển zoom cho camera trên mobile -->
                     <div class="camera-zoom-controls">
-                        <button class="zoom-btn" id="zoom-in"><i class="fas fa-search-plus"></i></button>
-                        <button class="zoom-btn" id="zoom-out"><i class="fas fa-search-minus"></i></button>
+                        <button class="zoom-btn" id="zoom-in" title="Phóng to"><i class="fas fa-search-plus"></i></button>
+                        <button class="zoom-btn" id="zoom-out" title="Thu nhỏ"><i class="fas fa-search-minus"></i></button>
                     </div>
                 </div>
                 
                 <div class="controls">
-                    <button id="capture" class="btn btn-primary"><i class="fas fa-camera"></i> Chụp ảnh</button>
-                    <button id="download" class="btn btn-success" disabled><i class="fas fa-download"></i> Tải về</button>
-                    <button id="retake" class="btn btn-secondary" style="display: none;"><i class="fas fa-redo"></i> Chụp lại</button>
-                    <button id="collage" class="btn btn-info"><i class="fas fa-th-large"></i> Ghép ảnh</button>
+                    <button id="capture" class="btn btn-primary">
+                        <i class="fas fa-camera"></i> 
+                        <span>Chụp ảnh</span>
+                    </button>
+                    <button id="download" class="btn btn-success" disabled>
+                        <i class="fas fa-download"></i> 
+                        <span>Tải về</span>
+                    </button>
+                    <button id="retake" class="btn btn-secondary" style="display: none;">
+                        <i class="fas fa-redo"></i> 
+                        <span>Chụp lại</span>
+                    </button>
+                    <button id="collage" class="btn btn-info">
+                        <i class="fas fa-th-large"></i> 
+                        <span>Ghép ảnh</span>
+                    </button>
                 </div>
                 
                 <div class="mode-selector">
-                    <div class="mode-title">Chế độ:</div>
+                    <div class="mode-title">Chế độ chụp:</div>
                     <div class="mode-options">
                         <label class="mode-option">
                             <input type="radio" name="mode" value="single" checked> 
                             <span class="mode-icon"><i class="fas fa-portrait"></i></span>
-                            <span>Đơn</span>
+                            <span>Ảnh đơn</span>
                         </label>
                         <label class="mode-option">
                             <input type="radio" name="mode" value="side_by_side"> 
                             <span class="mode-icon"><i class="fas fa-images"></i></span>
-                            <span>Ghép 2 ảnh</span>
+                            <span>Đôi bạn</span>
                         </label>
                         <label class="mode-option">
                             <input type="radio" name="mode" value="collage_2x2"> 
                             <span class="mode-icon"><i class="fas fa-th-large"></i></span>
-                            <span>2x2</span>
+                            <span>Bộ 4</span>
                         </label>
                         <label class="mode-option">
                             <input type="radio" name="mode" value="collage_3x3"> 
                             <span class="mode-icon"><i class="fas fa-th"></i></span>
-                            <span>3x3</span>
+                            <span>Bộ 9</span>
                         </label>
                         <label class="mode-option">
                             <input type="radio" name="mode" value="strip"> 
                             <span class="mode-icon"><i class="fas fa-film"></i></span>
-                            <span>Dải ảnh</span>
+                            <span>Dải film</span>
                         </label>
                     </div>
                 </div>
                 
                 <div class="filters-container">
-                    <div class="filters-title">Bộ lọc:</div>
+                    <div class="filters-title">Bộ lọc magical:</div>
                     <div class="filters">
                         <button class="filter-btn active" data-filter="normal">
                             <div class="filter-preview normal"></div>
-                            <span>Thường</span>
+                            <span>Tự nhiên</span>
                         </button>
                         <button class="filter-btn" data-filter="grayscale">
                             <div class="filter-preview grayscale"></div>
-                            <span>Đen trắng</span>
+                            <span>Cổ điển</span>
                         </button>
                         <button class="filter-btn" data-filter="sepia">
                             <div class="filter-preview sepia"></div>
-                            <span>Sepia</span>
+                            <span>Hoài cổ</span>
                         </button>
                         <button class="filter-btn" data-filter="invert">
                             <div class="filter-preview invert"></div>
-                            <span>Đảo màu</span>
+                            <span>Nghệ thuật</span>
                         </button>
                         <button class="filter-btn" data-filter="vintage">
                             <div class="filter-preview vintage"></div>
@@ -100,135 +113,240 @@
                         </button>
                         <button class="filter-btn" data-filter="cute">
                             <div class="filter-preview cute"></div>
-                            <span>Cute</span>
+                            <span>Siêu cute</span>
                         </button>
                     </div>
                 </div>
                 
                 <div class="stickers-container">
-                    <div class="stickers-title">Stickers:</div>
+                    <div class="stickers-title">Stickers đáng yêu:</div>
                     <div class="stickers">
-                        <button class="sticker-btn" data-sticker="crown"><img src="stickers/crown.png" alt="Crown"></button>
-                        <button class="sticker-btn" data-sticker="heart"><img src="stickers/heart.png" alt="Heart"></button>
-                        <button class="sticker-btn" data-sticker="star"><img src="stickers/star.png" alt="Star"></button>
-                        <button class="sticker-btn" data-sticker="sunglasses"><img src="stickers/sunglasses.png" alt="Sunglasses"></button>
-                        <button class="sticker-btn" data-sticker="hat"><img src="stickers/hat.png" alt="Hat"></button>
-                        <button class="sticker-btn" data-sticker="butterfly"><img src="stickers/butterfly.png" alt="Butterfly"></button>
+                        <button class="sticker-btn" data-sticker="crown" title="Vương miện">
+                            <img src="stickers/crown.png" alt="Crown">
+                        </button>
+                        <button class="sticker-btn" data-sticker="heart" title="Trái tim">
+                            <img src="stickers/heart.png" alt="Heart">
+                        </button>
+                        <button class="sticker-btn" data-sticker="star" title="Ngôi sao">
+                            <img src="stickers/star.png" alt="Star">
+                        </button>
+                        <button class="sticker-btn" data-sticker="sunglasses" title="Kính mát">
+                            <img src="stickers/sunglasses.png" alt="Sunglasses">
+                        </button>
+                        <button class="sticker-btn" data-sticker="hat" title="Mũ">
+                            <img src="stickers/hat.png" alt="Hat">
+                        </button>
+                        <button class="sticker-btn" data-sticker="butterfly" title="Bướm">
+                            <img src="stickers/butterfly.png" alt="Butterfly">
+                        </button>
                     </div>
                 </div>
                 
                 <div id="collage-preview" class="collage-preview" style="display: none;">
-                    <h3>Ghép ảnh của bạn</h3>
+                    <h3>Ghép ảnh siêu đẹp của bạn</h3>
                     <div class="collage-container" id="collage-container"></div>
                     <div class="collage-controls">
-                        <button id="finish-collage" class="btn btn-success"><i class="fas fa-check"></i> Hoàn thành</button>
-                        <button id="cancel-collage" class="btn btn-danger"><i class="fas fa-times"></i> Hủy</button>
+                        <button id="finish-collage" class="btn btn-success">
+                            <i class="fas fa-check"></i> Hoàn thành masterpiece
+                        </button>
+                        <button id="cancel-collage" class="btn btn-danger">
+                            <i class="fas fa-times"></i> Bỏ qua
+                        </button>
                     </div>
                 </div>
             </div>
             
             <div class="gallery">
-                <h2>Thư viện ảnh <i class="fas fa-images"></i></h2>
+                <h2> Bộ sưu tập ảnh đẹp <i class="fas fa-images"></i></h2>
                 <div id="photos" class="photos-container"></div>
             </div>
         </main>
         
         <footer>
-            <p>© 2025 PhotoBooth - c.nhoa</p>
+            <p>© 2025 PhotoBooth - <a href="https://www.instagram.com/c.nhoa/" target="_blank">c.nhoa</a></p>
         </footer>
     </div>
 
-
     <script src="script.js"></script>
     <script>
-    // Mobile-specific enhancements
+    // Enhanced mobile functionality với hiệu ứng cute hơn
     document.addEventListener('DOMContentLoaded', function() {
-        // Phát hiện thiết bị di động
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         
         if (isMobile) {
-            // Thêm class mobile cho body để áp dụng các style đặc biệt
             document.body.classList.add('mobile');
             
-            // Tối ưu UI cho cảm ứng
+            // Thêm hiệu ứng rung lắc nhẹ khi chạm
             document.querySelectorAll('.btn, .filter-btn, .sticker-btn, .mode-option').forEach(el => {
                 el.classList.add('touch-friendly');
+                
+                el.addEventListener('touchstart', function() {
+                    this.style.animation = 'none';
+                    setTimeout(() => {
+                        this.style.animation = 'gentle-shake 0.3s ease-in-out';
+                    }, 10);
+                });
             });
-            
-            // Hiển thị các nút điều khiển thu phóng
+
+            // Enhanced zoom controls với hiệu ứng cute
             const zoomControls = document.querySelector('.camera-zoom-controls');
             if (zoomControls) {
                 zoomControls.style.display = 'flex';
                 
-                // Xử lý nút thu phóng cải tiến để giữ tỷ lệ khung hình
                 const zoomIn = document.getElementById('zoom-in');
                 const zoomOut = document.getElementById('zoom-out');
                 const camera = document.getElementById('camera');
                 
                 let scale = 1;
                 
+                // Thêm hiệu ứng rung khi zoom
+                function addZoomEffect(element) {
+                    element.style.animation = 'zoom-effect 0.3s ease-out';
+                    setTimeout(() => {
+                        element.style.animation = '';
+                    }, 300);
+                }
+                
                 zoomIn.addEventListener('click', function() {
                     scale = Math.min(scale + 0.1, 2);
-                    if (document.getElementById('flip').classList.contains('active') || isFlipped) {
+                    if (window.isFlipped) {
                         camera.style.transform = `scaleX(-1) scale(${scale})`;
                     } else {
                         camera.style.transform = `scale(${scale})`;
                     }
+                    addZoomEffect(this);
                 });
                 
                 zoomOut.addEventListener('click', function() {
                     scale = Math.max(scale - 0.1, 0.5);
-                    if (document.getElementById('flip').classList.contains('active') || isFlipped) {
+                    if (window.isFlipped) {
                         camera.style.transform = `scaleX(-1) scale(${scale})`;
                     } else {
                         camera.style.transform = `scale(${scale})`;
                     }
+                    addZoomEffect(this);
                 });
                 
-                // Hiển thị tooltip về chức năng thu phóng
+                // Tooltip cute hơn
                 setTimeout(() => {
                     const tooltip = document.createElement('div');
-                    tooltip.innerHTML = 'Dùng +/- để điều chỉnh khung hình';
+                    tooltip.innerHTML = '✨ Dùng +/- để zoom camera cute hơn! 📸';
                     tooltip.style.cssText = `
                         position: absolute;
-                        bottom: 60px;
+                        bottom: 70px;
                         right: 10px;
-                        background: rgba(255,255,255,0.8);
-                        padding: 5px 10px;
-                        border-radius: 15px;
+                        background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,240,250,0.95));
+                        padding: 8px 15px;
+                        border-radius: 20px;
                         font-size: 12px;
+                        color: var(--primary-color);
                         z-index: 100;
+                        box-shadow: 0 4px 15px rgba(255,126,185,0.3);
+                        border: 2px solid rgba(255,192,203,0.3);
+                        animation: tooltip-appear 0.5s ease-out;
                     `;
                     document.querySelector('.camera-container').appendChild(tooltip);
-                    setTimeout(() => tooltip.remove(), 5000);
+                    setTimeout(() => {
+                        tooltip.style.animation = 'tooltip-disappear 0.5s ease-out forwards';
+                        setTimeout(() => tooltip.remove(), 500);
+                    }, 4000);
                 }, 2000);
             }
-
-            // Thêm nút help
-            const helpBtn = document.getElementById('help-btn');
-            if (helpBtn) {
-                helpBtn.addEventListener('click', function() {
-                    alert('Hướng dẫn sử dụng PhotoBooth trên điện thoại:\n\n' + 
-                          '1. Cho phép truy cập camera\n' +
-                          '2. Chọn bộ lọc và sticker (nếu muốn)\n' +
-                          '3. Bấm "Chụp ảnh"\n' +
-                          '4. Tải ảnh về hoặc chụp lại\n' +
-                          '5. Xoay ngang điện thoại để có giao diện tốt hơn');
-                });
-            }
             
-            // Ngăn ngừa zoom trên iOS khi double tap
+            // Ngăn ngừa zoom khi double tap
             document.addEventListener('dblclick', function(e) {
                 e.preventDefault();
             });
+            
+            // Thêm hiệu ứng rung nhẹ cho camera khi chụp
+            const captureBtn = document.getElementById('capture');
+            captureBtn.addEventListener('click', function() {
+                const cameraContainer = document.querySelector('.camera-container');
+                cameraContainer.style.animation = 'camera-shake 0.5s ease-out';
+                setTimeout(() => {
+                    cameraContainer.style.animation = '';
+                }, 500);
+            });
         } else {
-            // Ẩn điều khiển zoom trên desktop
             const zoomControls = document.querySelector('.camera-zoom-controls');
             if (zoomControls) {
                 zoomControls.style.display = 'none';
             }
         }
+        
+        // Thêm hiệu ứng chào mừng
+        setTimeout(() => {
+            const welcomeMessage = document.createElement('div');
+            welcomeMessage.innerHTML = '🎉 Chào mừng bạn đến với PhotoBooth !';
+            welcomeMessage.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, var(--primary-color), #ff9ed4);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 30px;
+                font-weight: 700;
+                z-index: 1000;
+                box-shadow: 0 8px 25px rgba(255,126,185,0.4);
+                animation: welcome-bounce 2s ease-out;
+            `;
+            document.body.appendChild(welcomeMessage);
+            
+            setTimeout(() => {
+                welcomeMessage.style.animation = 'welcome-fade-out 1s ease-out forwards';
+                setTimeout(() => welcomeMessage.remove(), 1000);
+            }, 3000);
+        }, 1000);
     });
+
+    // Thêm CSS cho các hiệu ứng mới
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes gentle-shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+        
+        @keyframes zoom-effect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes camera-shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+        }
+        
+        @keyframes tooltip-appear {
+            from { opacity: 0; transform: translateY(10px) scale(0.8); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        @keyframes tooltip-disappear {
+            from { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 0; transform: translateY(-10px) scale(0.8); }
+        }
+        
+        @keyframes welcome-bounce {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.8); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.1); }
+            40% { transform: translateX(-50%) translateY(-5px) scale(1); }
+            60% { transform: translateX(-50%) translateY(0) scale(1.05); }
+            80% { transform: translateX(-50%) translateY(-2px) scale(1); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+        }
+        
+        @keyframes welcome-fade-out {
+            from { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+            to { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.8); }
+        }
+    `;
+    document.head.appendChild(style);
     </script>
 </body>
 </html>
