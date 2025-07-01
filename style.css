@@ -512,15 +512,45 @@ header p {
     border: 3px solid white;
     box-shadow: var(--cute-shadow);
     transition: var(--transition);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
-.filter-btn:hover .filter-preview {
-    transform: scale(1.08) rotate(2deg);
+.filter-icon {
+    font-size: 24px;
+    z-index: 2;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    animation: filterIconFloat 3s ease-in-out infinite;
 }
 
-.filter-btn span {
-    font-size: 0.9rem;
-    font-weight: 600;
+@keyframes filterIconFloat {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-3px) scale(1.1); }
+}
+
+.filter-btn:hover .filter-icon {
+    animation: filterIconBounce 0.6s ease-in-out;
+}
+
+@keyframes filterIconBounce {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    25% { transform: translateY(-5px) scale(1.2); }
+    50% { transform: translateY(0px) scale(1.1); }
+    75% { transform: translateY(-2px) scale(1.15); }
+}
+
+.filter-btn.active .filter-icon {
+    color: white;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    animation: filterIconPulse 2s ease-in-out infinite;
+}
+
+@keyframes filterIconPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
 }
 
 /* Filter effects remain the same */
