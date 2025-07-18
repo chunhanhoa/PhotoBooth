@@ -16,28 +16,6 @@ PhotoBooth là một ứng dụng web đầy đủ tính năng cho phép ngườ
 - **Tải xuống hình ảnh**: Lưu ảnh đã chỉnh sửa vào thiết bị của bạn
 - **Thiết kế tương thích**: Hoạt động trên cả máy tính để bàn và thiết bị di động
 
-## Bắt đầu
-
-### Yêu cầu hệ thống
-
-- Trình duyệt web hiện đại (Chrome, Firefox, Safari hoặc Edge)
-- Thiết bị có camera
-- Kết nối internet (để tải ban đầu)
-
-### Cài đặt
-
-1. Sao chép kho lưu trữ:
-```
-git clone https://github.com/chunhanhoa/PhotoBooth.git
-```
-
-2. Điều hướng đến thư mục dự án:
-```
-cd PhotoBooth
-```
-
-3. Mở tệp `index.html` trong trình duyệt của bạn để bắt đầu sử dụng ứng dụng.
-
 ## Sử dụng
 
 1. Mở ứng dụng trong trình duyệt của bạn.
