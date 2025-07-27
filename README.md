@@ -1,7 +1,7 @@
 
 ## Xem dự án 📸
 
-Bạn có thể xem và sử dụng dự án trực tiếp tại đây nè :> [PhotoBooth](https://chunhanhoa.github.io/PhotoBooth/).
+Bạn có thể xem và sử dụng dự án trực tiếp tại đây nè :> [PhotoBooth](https://chunhanhoa.github.io/PhotoBooth/)
 
 ## Tổng quan
 
