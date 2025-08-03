@@ -180,7 +180,7 @@ header p {
     border-radius: var(--border-radius);
     box-shadow: 0 12px 30px rgba(255, 126, 185, 0.25);
     transition: var(--transition);
-    aspect-ratio: 4/3;
+    aspect-ratio: 4/3; /* Desktop mặc định */
     border: 3px solid rgba(255, 192, 203, 0.4);
 }
 
@@ -862,6 +862,19 @@ footer {
 
 /* Enhanced mobile responsive design */
 @media (max-width: 768px) {
+    /* Camera container cho mobile - chế độ dọc */
+    .camera-container {
+        aspect-ratio: 9/16 !important; /* Mobile sử dụng tỷ lệ dọc */
+        max-height: 70vh;
+        max-width: 90vw;
+    }
+    
+    #camera {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important; /* Cover để lấp đầy khung */
+    }
+    
     header h1 { font-size: 2.5rem; }
     
     .controls {
@@ -899,15 +912,16 @@ footer {
         width: 60px;
         height: 60px;
     }
-    
-    .camera-container {
-        max-height: 60vh;
-    }
 }
 
 @media (max-width: 480px) {
     .container { padding: 15px; }
     .booth { padding: 20px 15px; }
+    
+    .camera-container {
+        aspect-ratio: 9/16 !important; /* Đảm bảo mobile luôn dọc */
+        max-height: 60vh;
+    }
     
     header h1 { font-size: 2rem; }
     header p { font-size: 1rem; }
@@ -1046,4 +1060,34 @@ footer {
     background: linear-gradient(135deg, var(--primary-color), #ff9ed4);
     color: white;
     box-shadow: 0 6px 20px rgba(255, 126, 185, 0.4);
+}
+
+/* Chỉ áp dụng landscape warning trên mobile */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    body::after {
+        content: "🔄 Vui lòng xoay điện thoại về chế độ dọc để có trải nghiệm tốt nhất!";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-size: 18px;
+        text-align: center;
+        padding: 20px;
+        font-weight: bold;
+    }
+}
+
+/* Desktop giữ nguyên landscape */
+@media (min-width: 769px) {
+    .camera-container {
+        aspect-ratio: 4/3 !important; /* Desktop luôn ngang */
+        max-width: 680px;
+    }
 }

@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
     
     <!-- SEO Meta Tags -->
     <title>PhotoBooth - Chụp ảnh online với hiệu ứng đẹp | Lưu giữ khoảnh khắc</title>
@@ -43,6 +43,46 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📸</text></svg>">
+    
+    <!-- CSS để fix orientation trên mobile -->
+    <style>
+        /* Fix video orientation trên mobile */
+        @media screen and (max-width: 768px) {
+            #camera {
+                width: 100% !important;
+                height: auto !important;
+                object-fit: cover !important;
+                transform-origin: center center !important;
+            }
+            
+            .camera-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                aspect-ratio: 9/16 !important;
+            }
+            
+            /* Force portrait mode */
+            @media screen and (orientation: landscape) {
+                body::before {
+                    content: "🔄 Vui lòng xoay điện thoại để có trải nghiệm tốt nhất!";
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.9);
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 9999;
+                    font-size: 18px;
+                    text-align: center;
+                    padding: 20px;
+                }
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -121,7 +161,7 @@
                 </div>
                 
                <div class="filters-container">
-                    <div class="filters-title">🌈 Bộ lọc magical:</div>
+                    <div class="filters-title">Bộ lọc magical:</div>
                     <div class="filters">
                         <button class="filter-btn active" data-filter="normal">
                             <div class="filter-preview normal">
@@ -196,12 +236,41 @@
 
     <script src="script.js"></script>
     <script>
+    // Auto start camera khi load trang
+    window.addEventListener('load', function() {
+        // Đợi 500ms để đảm bảo tất cả đã load xong
+        setTimeout(() => {
+            if (window.startCamera) {
+                window.startCamera();
+            }
+        }, 500);
+    });
+
     // Enhanced mobile functionality với hiệu ứng cute hơn
     document.addEventListener('DOMContentLoaded', function() {
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isTablet = /iPad|Android(?!.*Mobile)/i.test(navigator.userAgent);
         
-        if (isMobile) {
+        if (isMobile && !isTablet) {
             document.body.classList.add('mobile');
+            
+            // Log để debug
+            console.log('📱 Thiết bị mobile được phát hiện - sử dụng chế độ dọc');
+            
+            // Force camera constraints cho mobile
+            const originalGetUserMedia = navigator.mediaDevices.getUserMedia;
+            navigator.mediaDevices.getUserMedia = function(constraints) {
+                if (constraints.video) {
+                    constraints.video = {
+                        ...constraints.video,
+                        width: { ideal: 720 },
+                        height: { ideal: 1280 },
+                        aspectRatio: { ideal: 9/16 },
+                        facingMode: { ideal: "user" }
+                    };
+                }
+                return originalGetUserMedia.call(this, constraints);
+            };
             
             // Thêm hiệu ứng rung lắc nhẹ khi chạm
             document.querySelectorAll('.btn, .filter-btn, .sticker-btn, .mode-option').forEach(el => {
@@ -295,6 +364,7 @@
                 }, 500);
             });
         } else {
+            console.log('💻 Thiết bị desktop/tablet - sử dụng chế độ ngang');
             const zoomControls = document.querySelector('.camera-zoom-controls');
             if (zoomControls) {
                 zoomControls.style.display = 'none';

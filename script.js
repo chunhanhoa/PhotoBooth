@@ -90,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         setTimeout(() => {
                             const tooltip = document.createElement('div');
                             tooltip.className = 'camera-tooltip';
-                            tooltip.innerHTML = 'Sử dụng nút + và - để điều chỉnh zoom';
                             tooltip.style.cssText = `
                                 position: absolute;
                                 bottom: 60px;
