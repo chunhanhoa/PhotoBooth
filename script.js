@@ -51,16 +51,32 @@ document.addEventListener('DOMContentLoaded', () => {
             // Kiểm tra nếu là thiết bị mobile
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
-            // Thiết lập cấu hình camera cải tiến
-            const constraints = {
-                video: {
-                    facingMode: 'user',
-                    // Đặt kích thước video phù hợp để thấy được toàn thân
-                    width: { ideal: isMobile ? window.innerWidth : 1280 },
-                    // Điều chỉnh chiều cao để nhìn thấy nhiều hơn
-                    height: { ideal: isMobile ? window.innerHeight * 1.5 : 720 }
-                }
-            };
+            // Thiết lập cấu hình camera cải tiến cho mobile
+            let constraints;
+            
+            if (isMobile) {
+                // Cấu hình đặc biệt cho mobile - tỷ lệ 9:16
+                constraints = {
+                    video: {
+                        facingMode: 'user',
+                        width: { ideal: 720, max: 1080 },
+                        height: { ideal: 1280, max: 1920 },
+                        aspectRatio: { ideal: 9/16, exact: 9/16 },
+                        frameRate: { ideal: 24, max: 30 }, // Giảm frame rate để tối ưu hiệu suất
+                        resizeMode: 'crop-and-scale'
+                    }
+                };
+            } else {
+                // Cấu hình cho desktop - tỷ lệ 4:3
+                constraints = {
+                    video: {
+                        facingMode: 'user',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        aspectRatio: { ideal: 4/3 }
+                    }
+                };
+            }
             
             const stream = await navigator.mediaDevices.getUserMedia(constraints);
             video.srcObject = stream;
@@ -68,55 +84,73 @@ document.addEventListener('DOMContentLoaded', () => {
             captureBtn.disabled = false;
             downloadBtn.disabled = true;
             
-            // Đặt kích thước canvas bằng với video
+            // Đặt kích thước canvas và video
             video.onloadedmetadata = () => {
-                canvas.width = video.videoWidth || 640;
-                canvas.height = video.videoHeight || 480;
+                // Lấy kích thước thực tế từ video stream
+                const videoWidth = video.videoWidth || 720;
+                const videoHeight = video.videoHeight || 1280;
+                
+                canvas.width = videoWidth;
+                canvas.height = videoHeight;
+                
+                if (isMobile) {
+                    // Đảm bảo video hiển thị đúng tỷ lệ 9:16 trên mobile
+                    video.style.width = '100%';
+                    video.style.height = '100%';
+                    video.style.objectFit = 'cover';
+                    video.style.objectPosition = 'center';
+                    
+                    // Tối ưu hiệu suất trên mobile
+                    video.style.willChange = 'transform';
+                    video.style.backfaceVisibility = 'hidden';
+                    video.style.perspective = '1000px';
+                }
+                
                 video.classList.add(`filter-${currentFilter}`);
                 
                 // Áp dụng trạng thái lật ảnh
                 if (isFlipped) {
-                    video.style.transform = 'scaleX(-1)';
+                    video.style.transform = isMobile ? 'scaleX(-1)' : 'scaleX(-1)';
                 } else {
                     video.style.transform = 'scaleX(1)';
                 }
                 
-                // Điều chỉnh hiển thị video trên mobile để thấy nhiều hơn
-                if (isMobile) {
-                    video.style.objectFit = 'contain';
-                    
-                    // Hiển thị thông báo để người dùng biết có nút thu phóng
-                    if (firstCameraLoad) {
-                        setTimeout(() => {
-                            const tooltip = document.createElement('div');
-                            tooltip.className = 'camera-tooltip';
-                            tooltip.style.cssText = `
-                                position: absolute;
-                                bottom: 60px;
-                                right: 10px;
-                                background: rgba(255,255,255,0.8);
-                                padding: 8px 12px;
-                                border-radius: 20px;
-                                font-size: 12px;
-                                color: var(--primary-color);
-                                z-index: 100;
-                            `;
-                            document.querySelector('.camera-container').appendChild(tooltip);
-                            
-                            // Tự động ẩn tooltip sau 5 giây
-                            setTimeout(() => tooltip.remove(), 5000);
-                        }, 2000);
-                        firstCameraLoad = false;
-                    }
+                // Hiển thị thông báo cho mobile
+                if (isMobile && firstCameraLoad) {
+                    setTimeout(() => {
+                        const tooltip = document.createElement('div');
+                        tooltip.innerHTML = '✨ Camera đã sẵn sàng! Giữ điện thoại thẳng đứng để có ảnh đẹp nhất! 📱';
+                        tooltip.className = 'camera-tooltip';
+                        tooltip.style.cssText = `
+                            position: absolute;
+                            bottom: 20px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            background: rgba(255,255,255,0.95);
+                            padding: 8px 15px;
+                            border-radius: 20px;
+                            font-size: 12px;
+                            color: var(--primary-color);
+                            z-index: 100;
+                            text-align: center;
+                            max-width: 80%;
+                            box-shadow: 0 4px 15px rgba(255,126,185,0.3);
+                            border: 2px solid rgba(255,192,203,0.3);
+                        `;
+                        document.querySelector('.camera-container').appendChild(tooltip);
+                        
+                        setTimeout(() => tooltip.remove(), 4000);
+                    }, 1000);
+                    firstCameraLoad = false;
                 }
             };
             
         } catch (err) {
             console.error('Lỗi khi truy cập camera:', err);
             
-            // Thông báo thân thiện hơn trên mobile
+            // Thông báo lỗi thân thiện cho mobile
             if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                alert('Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập camera và làm mới trang.');
+                alert('📱 Không thể truy cập camera. Vui lòng:\n• Cho phép quyền truy cập camera\n• Đảm bảo không có ứng dụng nào khác đang sử dụng camera\n• Làm mới trang và thử lại');
             } else {
                 alert('Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập và thử lại!');
             }
@@ -526,27 +560,43 @@ document.addEventListener('DOMContentLoaded', () => {
         photosTaken.forEach((photo, index) => {
             const photoDiv = document.createElement('div');
             photoDiv.className = 'photo-item';
+            
             const img = document.createElement('img');
             img.src = photo.src;
             img.alt = `Ảnh ${index + 1}`;
             img.classList.add(`filter-${photo.filter}`);
+            
             const overlay = document.createElement('div');
             overlay.className = 'photo-overlay';
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-btn';
-            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-            deleteBtn.onclick = () => deletePhoto(index);
+            
+            // Nút tải về
             const downloadBtn = document.createElement('button');
             downloadBtn.className = 'download-btn';
             downloadBtn.innerHTML = '<i class="fas fa-download"></i>';
+            downloadBtn.title = 'Tải về ảnh này';
             downloadBtn.onclick = (e) => {
                 e.stopPropagation();
                 downloadSinglePhoto(index);
             };
+            
+            // Nút xóa
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteBtn.title = 'Xóa ảnh này';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (confirm('Bạn có chắc muốn xóa ảnh này không?')) {
+                    deletePhoto(index);
+                }
+            };
+            
             overlay.appendChild(downloadBtn);
             overlay.appendChild(deleteBtn);
+            
             photoDiv.appendChild(img);
             photoDiv.appendChild(overlay);
+            
             photosContainer.appendChild(photoDiv);
         });
     }

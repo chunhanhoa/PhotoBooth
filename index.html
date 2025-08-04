@@ -236,17 +236,34 @@
 
     <script src="script.js"></script>
     <script>
-    // Auto start camera khi load trang
+    // Auto start camera khi load trang - Tối ưu cho mobile
     window.addEventListener('load', function() {
-        // Đợi 500ms để đảm bảo tất cả đã load xong
+        // Kiểm tra và force portrait trên mobile
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            // Khóa orientation về portrait
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('portrait').catch(e => {
+                    console.log('Không thể khóa orientation:', e);
+                });
+            }
+            
+            // Thông báo yêu cầu xoay điện thoại
+            if (window.innerWidth > window.innerHeight) {
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        // Đợi để đảm bảo tất cả đã load xong
         setTimeout(() => {
             if (window.startCamera) {
                 window.startCamera();
             }
-        }, 500);
+        }, 300); // Giảm delay để tăng tốc
     });
 
-    // Enhanced mobile functionality với hiệu ứng cute hơn
+    // Enhanced mobile functionality với hiệu suất cao hơn
     document.addEventListener('DOMContentLoaded', function() {
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const isTablet = /iPad|Android(?!.*Mobile)/i.test(navigator.userAgent);
@@ -254,37 +271,44 @@
         if (isMobile && !isTablet) {
             document.body.classList.add('mobile');
             
-            // Log để debug
-            console.log('📱 Thiết bị mobile được phát hiện - sử dụng chế độ dọc');
+            console.log('📱 Mobile detected - Optimizing for 9:16 portrait mode');
             
-            // Force camera constraints cho mobile
+            // Tối ưu hiệu suất: Tắt animations không cần thiết
+            const reduceAnimations = document.createElement('style');
+            reduceAnimations.textContent = `
+                @media (max-width: 768px) {
+                    * {
+                        animation-duration: 0.3s !important;
+                        transition-duration: 0.2s !important;
+                    }
+                    
+                    .booth::before, .booth::after {
+                        display: none !important;
+                    }
+                    
+                    body::before {
+                        animation: none !important;
+                    }
+                }
+            `;
+            document.head.appendChild(reduceAnimations);
+            
+            // Force camera constraints cho mobile 9:16
             const originalGetUserMedia = navigator.mediaDevices.getUserMedia;
             navigator.mediaDevices.getUserMedia = function(constraints) {
                 if (constraints.video) {
                     constraints.video = {
-                        ...constraints.video,
-                        width: { ideal: 720 },
-                        height: { ideal: 1280 },
-                        aspectRatio: { ideal: 9/16 },
-                        facingMode: { ideal: "user" }
+                        facingMode: { ideal: "user" },
+                        width: { ideal: 720, max: 1080 },
+                        height: { ideal: 1280, max: 1920 },
+                        aspectRatio: { ideal: 9/16, exact: 9/16 },
+                        frameRate: { ideal: 24, max: 30 }
                     };
                 }
                 return originalGetUserMedia.call(this, constraints);
             };
             
-            // Thêm hiệu ứng rung lắc nhẹ khi chạm
-            document.querySelectorAll('.btn, .filter-btn, .sticker-btn, .mode-option').forEach(el => {
-                el.classList.add('touch-friendly');
-                
-                el.addEventListener('touchstart', function() {
-                    this.style.animation = 'none';
-                    setTimeout(() => {
-                        this.style.animation = 'gentle-shake 0.3s ease-in-out';
-                    }, 10);
-                });
-            });
-
-            // Enhanced zoom controls với hiệu ứng cute
+            // Enhanced zoom controls - touch friendly
             const zoomControls = document.querySelector('.camera-zoom-controls');
             if (zoomControls) {
                 zoomControls.style.display = 'flex';
@@ -295,155 +319,92 @@
                 
                 let scale = 1;
                 
-                // Thêm hiệu ứng rung khi zoom
-                function addZoomEffect(element) {
-                    element.style.animation = 'zoom-effect 0.3s ease-out';
-                    setTimeout(() => {
-                        element.style.animation = '';
-                    }, 300);
+                function updateCameraTransform() {
+                    const isFlipped = window.isFlipped || true;
+                    if (isFlipped) {
+                        camera.style.transform = `scaleX(-1) scale(${scale})`;
+                    } else {
+                        camera.style.transform = `scale(${scale})`;
+                    }
                 }
                 
                 zoomIn.addEventListener('click', function() {
-                    scale = Math.min(scale + 0.1, 2);
-                    if (window.isFlipped) {
-                        camera.style.transform = `scaleX(-1) scale(${scale})`;
-                    } else {
-                        camera.style.transform = `scale(${scale})`;
-                    }
-                    addZoomEffect(this);
+                    scale = Math.min(scale + 0.2, 3); // Tăng bước zoom
+                    updateCameraTransform();
+                    this.style.transform = 'scale(1.2)';
+                    setTimeout(() => this.style.transform = 'scale(1)', 150);
                 });
                 
                 zoomOut.addEventListener('click', function() {
-                    scale = Math.max(scale - 0.1, 0.5);
-                    if (window.isFlipped) {
-                        camera.style.transform = `scaleX(-1) scale(${scale})`;
-                    } else {
-                        camera.style.transform = `scale(${scale})`;
-                    }
-                    addZoomEffect(this);
+                    scale = Math.max(scale - 0.2, 0.8);
+                    updateCameraTransform();
+                    this.style.transform = 'scale(1.2)';
+                    setTimeout(() => this.style.transform = 'scale(1)', 150);
                 });
-                
-                // Tooltip cute hơn
-                setTimeout(() => {
-                    const tooltip = document.createElement('div');
-                    tooltip.innerHTML = '✨ Dùng +/- để zoom camera cute hơn! 📸';
-                    tooltip.style.cssText = `
-                        position: absolute;
-                        bottom: 70px;
-                        right: 10px;
-                        background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,240,250,0.95));
-                        padding: 8px 15px;
-                        border-radius: 20px;
-                        font-size: 12px;
-                        color: var(--primary-color);
-                        z-index: 100;
-                        box-shadow: 0 4px 15px rgba(255,126,185,0.3);
-                        border: 2px solid rgba(255,192,203,0.3);
-                        animation: tooltip-appear 0.5s ease-out;
-                    `;
-                    document.querySelector('.camera-container').appendChild(tooltip);
-                    setTimeout(() => {
-                        tooltip.style.animation = 'tooltip-disappear 0.5s ease-out forwards';
-                        setTimeout(() => tooltip.remove(), 500);
-                    }, 4000);
-                }, 2000);
             }
             
-            // Ngăn ngừa zoom khi double tap
-            document.addEventListener('dblclick', function(e) {
-                e.preventDefault();
-            });
-            
-            // Thêm hiệu ứng rung nhẹ cho camera khi chụp
-            const captureBtn = document.getElementById('capture');
-            captureBtn.addEventListener('click', function() {
-                const cameraContainer = document.querySelector('.camera-container');
-                cameraContainer.style.animation = 'camera-shake 0.5s ease-out';
+            // Thông báo welcome tối ưu
+            setTimeout(() => {
+                const welcome = document.createElement('div');
+                welcome.innerHTML = '📱 Camera đã tối ưu cho điện thoại!';
+                welcome.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: var(--primary-color);
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 25px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    z-index: 1000;
+                    animation: slideDown 0.5s ease;
+                `;
+                document.body.appendChild(welcome);
+                
                 setTimeout(() => {
-                    cameraContainer.style.animation = '';
-                }, 500);
-            });
+                    welcome.style.animation = 'slideUp 0.5s ease forwards';
+                    setTimeout(() => welcome.remove(), 500);
+                }, 2500);
+            }, 1500);
+            
         } else {
-            console.log('💻 Thiết bị desktop/tablet - sử dụng chế độ ngang');
+            // Desktop: ẩn zoom controls
             const zoomControls = document.querySelector('.camera-zoom-controls');
             if (zoomControls) {
                 zoomControls.style.display = 'none';
             }
         }
-        
-        // Thêm hiệu ứng chào mừng
-        setTimeout(() => {
-            const welcomeMessage = document.createElement('div');
-            welcomeMessage.innerHTML = '🎉 Chào mừng bạn đến với PhotoBooth !';
-            welcomeMessage.style.cssText = `
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: linear-gradient(135deg, var(--primary-color), #ff9ed4);
-                color: white;
-                padding: 15px 25px;
-                border-radius: 30px;
-                font-weight: 700;
-                z-index: 1000;
-                box-shadow: 0 8px 25px rgba(255,126,185,0.4);
-                animation: welcome-bounce 2s ease-out;
-            `;
-            document.body.appendChild(welcomeMessage);
-            
-            setTimeout(() => {
-                welcomeMessage.style.animation = 'welcome-fade-out 1s ease-out forwards';
-                setTimeout(() => welcomeMessage.remove(), 1000);
-            }, 3000);
-        }, 1000);
     });
 
-    // Thêm CSS cho các hiệu ứng mới
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes gentle-shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-2px); }
-            75% { transform: translateX(2px); }
+    // Thêm CSS animations tối ưu
+    const mobileStyle = document.createElement('style');
+    mobileStyle.textContent = `
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
         
-        @keyframes zoom-effect {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+        @keyframes slideUp {
+            from { opacity: 1; transform: translateX(-50%) translateY(0); }
+            to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
         }
         
-        @keyframes camera-shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
-            20%, 40%, 60%, 80% { transform: translateX(2px); }
-        }
-        
-        @keyframes tooltip-appear {
-            from { opacity: 0; transform: translateY(10px) scale(0.8); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        
-        @keyframes tooltip-disappear {
-            from { opacity: 1; transform: translateY(0) scale(1); }
-            to { opacity: 0; transform: translateY(-10px) scale(0.8); }
-        }
-        
-        @keyframes welcome-bounce {
-            0% { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.8); }
-            20% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.1); }
-            40% { transform: translateX(-50%) translateY(-5px) scale(1); }
-            60% { transform: translateX(-50%) translateY(0) scale(1.05); }
-            80% { transform: translateX(-50%) translateY(-2px) scale(1); }
-            100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-        }
-        
-        @keyframes welcome-fade-out {
-            from { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-            to { opacity: 0; transform: translateX(-50%) translateY(-20px) scale(0.8); }
+        /* Touch feedback tối ưu */
+        @media (max-width: 768px) {
+            .btn:active, .filter-btn:active, .zoom-btn:active {
+                transform: scale(0.95) !important;
+            }
+            
+            /* Tối ưu scroll */
+            body {
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+            }
         }
     `;
-    document.head.appendChild(style);
+    document.head.appendChild(mobileStyle);
     </script>
 </body>
 </html>

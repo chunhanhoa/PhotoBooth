@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
 :root {
     --primary-color: #ff7eb9;
@@ -17,6 +17,11 @@
     --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     --cute-shadow: 0 4px 15px rgba(255, 182, 193, 0.3);
     --hover-transform: translateY(-3px) scale(1.02);
+    
+    /* Font variables */
+    --font-primary: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-heading: 'Space Grotesk', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 * {
@@ -26,12 +31,14 @@
 }
 
 body {
-    font-family: 'Nunito', 'Quicksand', sans-serif;
+    font-family: var(--font-body);
     background: linear-gradient(135deg, #ffeef8 0%, #fff0fb 50%, #ffe8f5 100%);
     color: var(--text-color);
     line-height: 1.6;
     position: relative;
     overflow-x: hidden;
+    font-weight: 400;
+    letter-spacing: -0.01em;
 }
 
 /* Thêm hiệu ứng nền động cute */
@@ -90,7 +97,9 @@ header h1 {
     background-clip: text;
     text-shadow: 0 4px 8px rgba(255, 126, 185, 0.3);
     font-weight: 800;
+    font-family: var(--font-heading);
     position: relative;
+    letter-spacing: -0.03em;
 }
 
 header h1::after {
@@ -111,8 +120,10 @@ header p {
     font-size: 1.3rem;
     color: var(--text-color);
     opacity: 0.9;
-    font-weight: 600;
+    font-weight: 500;
+    font-family: var(--font-body);
     position: relative;
+    letter-spacing: -0.01em;
 }
 
 
@@ -293,76 +304,65 @@ header p {
 .btn {
     border: none;
     padding: 15px 30px;
-    border-radius: 50px;
+    border-radius: 15px;
     cursor: pointer;
     font-size: 1.1rem;
-    font-weight: 700;
-    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-family: var(--font-primary);
     display: flex;
     align-items: center;
     gap: 10px;
-    transition: var(--transition);
-    box-shadow: var(--cute-shadow);
+    transition: none;
+    box-shadow: none;
     color: white;
     position: relative;
     overflow: hidden;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    text-transform: none;
+    letter-spacing: -0.01em;
 }
 
 .btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s;
-}
-
-.btn:hover::before {
-    left: 100%;
+    display: none;
 }
 
 .btn:hover {
-    transform: var(--hover-transform);
-    box-shadow: 0 8px 25px rgba(255, 126, 185, 0.4);
+    transform: none;
+    box-shadow: none;
 }
 
 .btn:active {
-    transform: translateY(-1px) scale(0.98);
+    transform: none;
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #ff7eb9, #ff9ed4);
+    background: #ff7eb9;
     border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #e45c9c, #ff7eb9);
+    background: #e45c9c;
 }
 
 .btn-success {
-    background: linear-gradient(135deg, #7eff9b, #a8ffb8);
+    background: #7eff9b;
     color: var(--text-color);
 }
 
 .btn-secondary {
-    background: linear-gradient(135deg, #7eb6ff, #a8d0ff);
+    background: #7eb6ff;
 }
 
 .btn-info {
-    background: linear-gradient(135deg, #7ee3ff, #a8f0ff);
+    background: #7ee3ff;
     color: var(--text-color);
 }
 
 .btn-danger {
-    background: linear-gradient(135deg, #ff7e7e, #ff9e9e);
+    background: #ff7e7e;
 }
 
 .btn:disabled {
-    background: linear-gradient(135deg, #d4d4d4, #e8e8e8);
+    background: #d4d4d4;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -370,12 +370,7 @@ header p {
 
 .btn i {
     font-size: 1.3rem;
-    animation: iconBounce 2s ease-in-out infinite;
-}
-
-@keyframes iconBounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-2px); }
+    animation: none;
 }
 
 .mode-selector, .filters-container, .stickers-container {
@@ -395,15 +390,16 @@ header p {
 }
 
 .mode-title, .filters-title, .stickers-title {
-    font-weight: 700;
+    font-weight: 600;
     margin-bottom: 15px;
     color: var(--primary-color);
     display: flex;
     align-items: center;
     gap: 10px;
     font-size: 1.2rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-family: var(--font-heading);
+    text-transform: none;
+    letter-spacing: -0.02em;
 }
 
 .mode-title::before { content: '📷'; }
@@ -428,13 +424,6 @@ header p {
     gap: 8px;
     background: rgba(255, 255, 255, 0.5);
     border: 2px solid transparent;
-}
-
-.mode-option:hover {
-    background: linear-gradient(135deg, #ffeef8, #fff0fb);
-    transform: translateY(-3px);
-    box-shadow: var(--cute-shadow);
-    border-color: rgba(255, 126, 185, 0.3);
 }
 
 .mode-option input {
@@ -464,8 +453,10 @@ header p {
 
 .mode-option span:last-child {
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 500;
+    font-family: var(--font-body);
     color: var(--text-color);
+    letter-spacing: -0.01em;
 }
 
 .filters {
@@ -487,12 +478,6 @@ header p {
     padding: 12px;
     border-radius: 18px;
     backdrop-filter: blur(5px);
-}
-
-.filter-btn:hover {
-    background: linear-gradient(135deg, #ffeef8, #fff0fb);
-    transform: var(--hover-transform);
-    border-color: var(--primary-color);
 }
 
 .filter-btn.active {
@@ -523,44 +508,12 @@ header p {
     font-size: 24px;
     z-index: 2;
     text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    animation: filterIconFloat 3s ease-in-out infinite;
-}
-
-@keyframes filterIconFloat {
-    0%, 100% { transform: translateY(0px) scale(1); }
-    50% { transform: translateY(-3px) scale(1.1); }
-}
-
-.filter-btn:hover .filter-icon {
-    animation: filterIconBounce 0.6s ease-in-out;
-}
-
-@keyframes filterIconBounce {
-    0%, 100% { transform: translateY(0px) scale(1); }
-    25% { transform: translateY(-5px) scale(1.2); }
-    50% { transform: translateY(0px) scale(1.1); }
-    75% { transform: translateY(-2px) scale(1.15); }
 }
 
 .filter-btn.active .filter-icon {
     color: white;
     text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-    animation: filterIconPulse 2s ease-in-out infinite;
 }
-
-@keyframes filterIconPulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.2); opacity: 0.8; }
-}
-
-/* Filter effects remain the same */
-.filter-preview.normal { filter: none; }
-.filter-preview.grayscale { filter: grayscale(100%); }
-.filter-preview.sepia { filter: sepia(100%); }
-.filter-preview.invert { filter: invert(80%); }
-.filter-preview.vintage { filter: sepia(30%) saturate(140%) brightness(0.9) contrast(1.2); }
-.filter-preview.pastel { filter: brightness(1.1) saturate(1.3) contrast(0.9); }
-.filter-preview.cute { filter: brightness(1.1) saturate(1.5) contrast(0.85) hue-rotate(10deg); }
 
 .stickers {
     display: flex;
@@ -594,15 +547,6 @@ header p {
     transition: opacity 0.3s;
 }
 
-.sticker-btn:hover::before {
-    opacity: 1;
-}
-
-.sticker-btn:hover {
-    transform: translateY(-5px) scale(1.1) rotate(5deg);
-    box-shadow: 0 8px 25px rgba(255, 126, 185, 0.3);
-}
-
 .sticker-btn img {
     max-width: 85%;
     max-height: 85%;
@@ -633,7 +577,9 @@ header p {
     color: var(--primary-color);
     font-size: 1.4rem;
     font-weight: 700;
+    font-family: var(--font-heading);
     position: relative;
+    letter-spacing: -0.02em;
 }
 
 .collage-preview h3::before,
@@ -672,11 +618,6 @@ header p {
     border-radius: 12px;
     border: 2px solid #ffdbec;
     transition: var(--transition);
-}
-
-.collage-item:hover {
-    transform: scale(1.02);
-    box-shadow: var(--cute-shadow);
 }
 
 .collage-item img {
@@ -740,7 +681,9 @@ header p {
     background-clip: text;
     font-size: 2rem;
     font-weight: 800;
+    font-family: var(--font-heading);
     position: relative;
+    letter-spacing: -0.03em;
 }
 
 .gallery h2::before {
@@ -802,14 +745,40 @@ header p {
     right: 0;
     background: linear-gradient(to top, rgba(255, 126, 185, 0.8), transparent);
     padding: 20px 15px 15px;
-    transform: translateY(100%);
+    transform: translateY(0); /* Thay đổi từ translateY(100%) */
     transition: var(--transition);
     display: flex;
     justify-content: space-between;
+    opacity: 0; /* Thêm opacity để tạo hiệu ứng fade */
 }
 
 .photo-item:hover .photo-overlay {
+    opacity: 1; /* Hiển thị khi hover */
     transform: translateY(0);
+}
+
+/* Hiển thị luôn trên mobile để dễ sử dụng */
+@media (max-width: 768px) {
+    .photo-item .photo-overlay {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        left: auto;
+        bottom: auto;
+        background: none;
+        padding: 0;
+        gap: 5px;
+        width: auto;
+    }
+    
+    .photo-item .delete-btn, .photo-item .download-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
 }
 
 .photo-item .delete-btn, .photo-item .download-btn {
@@ -846,8 +815,17 @@ footer {
     padding: 25px 0;
     color: #9e83a9;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 500;
+    font-family: var(--font-body);
     position: relative;
+    letter-spacing: -0.01em;
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-family: var(--font-primary);
 }
 
 
@@ -860,45 +838,106 @@ footer {
 .filter-pastel { filter: brightness(1.1) saturate(1.3) contrast(0.9); }
 .filter-cute { filter: brightness(1.1) saturate(1.5) contrast(0.85) hue-rotate(10deg); }
 
-/* Enhanced mobile responsive design */
+/* Enhanced mobile responsive design - Tối ưu hóa cho mobile */
 @media (max-width: 768px) {
-    /* Camera container cho mobile - chế độ dọc */
+    /* Tối ưu hiệu suất tổng thể */
+    * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    
+    body {
+        -webkit-overflow-scrolling: touch;
+        transform: translateZ(0); /* Tăng tốc GPU */
+    }
+    
+    /* Camera container cho mobile - chế độ dọc BẮNG BUỘC */
     .camera-container {
-        aspect-ratio: 9/16 !important; /* Mobile sử dụng tỷ lệ dọc */
-        max-height: 70vh;
-        max-width: 90vw;
+        aspect-ratio: 9/16 !important; /* Mobile PHẢI là dọc */
+        max-height: 75vh !important; /* Tăng chiều cao để thấy nhiều hơn */
+        max-width: 90vw !important;
+        width: 100% !important;
+        position: relative;
+        overflow: hidden;
+        transform: translateZ(0); /* GPU acceleration */
+        will-change: transform;
     }
     
     #camera {
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important; /* Cover để lấp đầy khung */
+        object-position: center top !important; /* Ưu tiên hiển thị phần trên (mặt) */
+        transform-origin: center center !important;
+        /* Tối ưu hiệu suất */
+        will-change: transform, filter;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-perspective: 1000px;
+        perspective: 1000px;
+        /* Giảm lag */
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
     }
     
-    header h1 { font-size: 2.5rem; }
+    /* Tối ưu container */
+    .container {
+        padding: 10px;
+        transform: translateZ(0);
+    }
     
+    .booth {
+        padding: 20px 15px;
+        margin-bottom: 20px;
+        transform: translateZ(0);
+    }
+    
+    /* Header tối ưu */
+    header h1 { 
+        font-size: 2.5rem; 
+        font-family: var(--font-heading);
+        letter-spacing: -0.02em;
+        transform: translateZ(0);
+    }
+    
+    header p {
+        font-size: 1.1rem;
+        font-family: var(--font-body);
+    }
+    
+    /* Controls tối ưu */
     .controls {
-        flex-direction: column;
-        align-items: center;
         gap: 15px;
+        margin: 25px 0;
     }
     
     .btn {
-        width: 100%;
-        justify-content: center;
-        padding: 16px;
         font-size: 1rem;
+        font-family: var(--font-primary);
+        font-weight: 500;
+        padding: 12px 25px;
+        will-change: auto;
+        -webkit-tap-highlight-color: transparent;
+        border-radius: 12px;
+        transition: none;
     }
     
-    .photos-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
+    .btn:hover {
+        transform: none;
     }
     
-    .photo-item {
-        height: 180px;
+    /* Filter và sticker tối ưu */
+    .filters, .stickers {
+        gap: 12px;
     }
     
+    .filter-preview, .sticker-btn {
+        width: 60px;
+        height: 60px;
+        will-change: transform;
+    }
+    
+    /* Mode options tối ưu */
     .mode-options {
         gap: 10px;
     }
@@ -908,179 +947,112 @@ footer {
         height: 40px;
     }
     
-    .filter-preview, .sticker-btn {
-        width: 60px;
-        height: 60px;
+    /* Gallery tối ưu */
+    .photos-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .photo-item {
+        height: 180px;
+        will-change: transform;
+    }
+    
+    /* Zoom controls enhanced */
+    .camera-zoom-controls {
+        display: flex !important;
+        bottom: 20px;
+        right: 15px;
+        gap: 10px;
+    }
+    
+    .zoom-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        /* Tối ưu touch */
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
     }
 }
 
 @media (max-width: 480px) {
-    .container { padding: 15px; }
-    .booth { padding: 20px 15px; }
+    .container { 
+        padding: 10px; 
+        transform: translateZ(0);
+    }
     
+    .booth { 
+        padding: 15px 10px; 
+    }
+    
+    /* Camera container siêu tối ưu cho điện thoại nhỏ */
     .camera-container {
-        aspect-ratio: 9/16 !important; /* Đảm bảo mobile luôn dọc */
-        max-height: 60vh;
+        aspect-ratio: 9/16 !important; /* BẮNG BUỘC dọc */
+        max-height: 70vh !important; /* Điều chỉnh để vừa màn hình */
+        max-width: 95vw !important;
     }
     
-    header h1 { font-size: 2rem; }
-    header p { font-size: 1rem; }
-    
-    .photos-container {
-        grid-template-columns: 1fr;
-        gap: 15px;
+    #camera {
+        /* Đảm bảo camera hiển thị đầy đủ cơ thể */
+        object-position: center 20% !important; /* Hiển thị từ đầu xuống */
     }
     
-    .camera-container {
-        max-height: 50vh;
-        aspect-ratio: 3/4;
+    header h1 { 
+        font-size: 2rem;
+        font-family: var(--font-heading);
     }
     
-    .controls {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+    header p { 
+        font-size: 1rem;
+        font-family: var(--font-body);
     }
     
-    #capture { grid-column: span 2; }
+    .btn {
+        font-size: 0.95rem;
+        font-family: var(--font-primary);
+        padding: 10px 20px;
+        border-radius: 10px;
+    }
+    
+    #capture { 
+        grid-column: span 2; 
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        border-radius: 12px;
+    }
+    
+    /* Tối ưu stickers cho màn hình nhỏ */
+    .stickers-preview {
+        pointer-events: auto;
+    }
+    
+    .sticker {
+        min-width: 40px;
+        min-height: 40px;
+    }
 }
 
-/* Thêm hiệu ứng loading cute */
-.loading {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border: 3px solid rgba(255, 126, 185, 0.3);
-    border-radius: 50%;
-    border-top-color: var(--primary-color);
-    animation: cuteSpinner 1s ease-in-out infinite;
-}
-
-@keyframes cuteSpinner {
-    to { transform: rotate(360deg); }
-}
-
-/* Thêm hiệu ứng cho stickers khi hover */
-.sticker {
-    transition: var(--transition);
-}
-
-.sticker:hover {
-    transform: scale(1.05) rotate(2deg);
-    filter: drop-shadow(0 4px 8px rgba(255, 126, 185, 0.3));
-}
-
-.sticker-controls {
-    position: absolute;
-    top: -35px;
-    left: 0;
-    display: none;
-    gap: 8px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 20px;
-    padding: 5px;
-    box-shadow: var(--cute-shadow);
-    backdrop-filter: blur(5px);
-}
-
-.sticker:hover .sticker-controls {
-    display: flex;
-    animation: controlsAppear 0.3s ease-out;
-}
-
-@keyframes controlsAppear {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.sticker-btn-control {
-    width: 28px;
-    height: 28px;
-    border: none;
-    border-radius: 50%;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition);
-    color: var(--text-color);
-    font-size: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.sticker-increase {
-    background: linear-gradient(135deg, var(--success-color), #a8ffb8);
-}
-
-.sticker-decrease {
-    background: linear-gradient(135deg, var(--warning-color), #ffe9a8);
-}
-
-.sticker-delete {
-    background: linear-gradient(135deg, var(--danger-color), #ff9e9e);
-    color: white;
-}
-
-.sticker-btn-control:hover {
-    transform: scale(1.15) rotate(5deg);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Thêm hiệu ứng động cho camera zoom controls */
-.camera-zoom-controls {
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.zoom-btn {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,250,253,0.9));
-    border: 2px solid rgba(255, 192, 203, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: var(--primary-color);
-    cursor: pointer;
-    transition: var(--transition);
-    backdrop-filter: blur(5px);
-    box-shadow: var(--cute-shadow);
-}
-
-.zoom-btn:hover {
-    transform: scale(1.1) rotate(5deg);
-    background: linear-gradient(135deg, var(--primary-color), #ff9ed4);
-    color: white;
-    box-shadow: 0 6px 20px rgba(255, 126, 185, 0.4);
-}
-
-/* Chỉ áp dụng landscape warning trên mobile */
+/* Force portrait mode cho mobile - QUAN TRỌNG */
 @media screen and (max-width: 768px) and (orientation: landscape) {
     body::after {
-        content: "🔄 Vui lòng xoay điện thoại về chế độ dọc để có trải nghiệm tốt nhất!";
+        content: "📱🔄 Vui lòng xoay điện thoại về chế độ dọc để camera hiển thị đúng tỷ lệ!";
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0,0,0,0.9);
+        background: rgba(0,0,0,0.95);
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 9999;
+        z-index: 99999;
         font-size: 18px;
         text-align: center;
-        padding: 20px;
+        padding: 30px;
         font-weight: bold;
+        line-height: 1.5;
     }
 }
 
@@ -1089,5 +1061,39 @@ footer {
     .camera-container {
         aspect-ratio: 4/3 !important; /* Desktop luôn ngang */
         max-width: 680px;
+        max-height: none;
+    }
+    
+    #camera {
+        object-fit: contain !important;
+        object-position: center !important;
+    }
+    
+    .camera-zoom-controls {
+        display: none !important;
+    }
+}
+
+/* Thêm CSS tối ưu hiệu suất */
+.filter-btn, .sticker-btn, .btn, .mode-option {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    will-change: auto;
+}
+
+/* Tối ưu animation cho mobile - loại bỏ hiệu ứng nặng */
+@media (max-width: 768px) {
+    .photo-item, .btn, .filter-btn {
+        transition: none;
+    }
+    
+    /* Giảm hiệu ứng blur để tăng performance */
+    .booth::before, .booth::after {
+        display: none;
+    }
+    
+    /* Tắt các hiệu ứng nặng trên mobile */
+    body::before {
+        animation: none;
     }
 }
