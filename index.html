@@ -2,49 +2,12 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=portrait">
-    
-    <!-- SEO Meta Tags -->
-    <title>PhotoBooth - Chụp ảnh online với hiệu ứng đẹp | Lưu giữ khoảnh khắc</title>
-    <meta name="description" content="PhotoBooth online miễn phí với nhiều hiệu ứng đẹp, bộ lọc magical và chế độ chụp đa dạng. Chụp ảnh đơn, ghép ảnh, dải film ngay trên trình duyệt.">
-    <meta name="keywords" content="photobooth, chụp ảnh online, hiệu ứng ảnh, bộ lọc ảnh, ghép ảnh, camera online, chụp ảnh miễn phí">
-    <meta name="author" content="c.nhoa">
-    <meta name="robots" content="index, follow">
-    
-    <!-- Open Graph Meta Tags for Social Media -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="PhotoBooth - Chụp ảnh online với hiệu ứng đẹp">
-    <meta property="og:description" content="Ứng dụng PhotoBooth online miễn phí với nhiều hiệu ứng magical, bộ lọc đẹp và chế độ chụp đa dạng.">
-    <meta property="og:image" content="https://chunhanhoa.github.io/PhotoBooth/images/photobooth-preview.jpg">
-    <meta property="og:url" content="https://chunhanhoa.github.io/PhotoBooth/">
-    <meta property="og:site_name" content="PhotoBooth">
-    <meta property="og:locale" content="vi_VN">
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="PhotoBooth - Chụp ảnh online với hiệu ứng đẹp">
-    <meta name="twitter:description" content="Ứng dụng PhotoBooth online miễn phí với nhiều hiệu ứng magical và bộ lọc đẹp.">
-    <meta name="twitter:image" content="https://chunhanhoa.github.io/PhotoBooth/images/photobooth-preview.jpg">
-    <meta name="twitter:creator" content="@c_nhoa">
-    
-    <!-- Additional SEO Meta Tags -->
-    <meta name="theme-color" content="#ff7eb9">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="PhotoBooth">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://chunhanhoa.github.io/PhotoBooth/">
-    
-    <!-- Google Site Verification -->
-    <meta name="google-site-verification" content="39df57f868aa5aa6">
-    
-    <!-- Existing head content -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PhotoBooth - Chụp ảnh online với hiệu ứng đẹp</title>
+    <meta name="description" content="PhotoBooth online miễn phí với nhiều hiệu ứng đẹp, bộ lọc magical và chế độ chụp đa dạng.">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📸</text></svg>">
-    
-    <!-- CSS để fix orientation trên mobile -->
     <style>
         /* Fix video orientation trên mobile */
         @media screen and (max-width: 768px) {
@@ -60,351 +23,171 @@
                 max-width: 100% !important;
                 aspect-ratio: 9/16 !important;
             }
-            
-            /* Force portrait mode */
-            @media screen and (orientation: landscape) {
-                body::before {
-                    content: "🔄 Vui lòng xoay điện thoại để có trải nghiệm tốt nhất!";
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0,0,0,0.9);
-                    color: white;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 9999;
-                    font-size: 18px;
-                    text-align: center;
-                    padding: 20px;
-                }
-            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>PhotoBooth<i class="fas fa-camera-retro"></i></h1>
-            <p>Lưu giữ khoảnh khắc đẹp của bạn</p>
-        </header>
+    <div class="booth-machine">
+        <div class="booth-header">
+            <h1 class="booth-title">c.nhoa's Booth</h1>
+        </div>
         
-        <main>
-            <div class="booth">
-                <div class="camera-container">
-                    <video id="camera" autoplay></video>
-                    <canvas id="canvas" style="display: none;"></canvas>
-                    <div class="flash"></div>
-                    <div id="countdown" class="countdown"></div>
-                    <div class="camera-overlay">
+        <div class="booth-main">
+            <!-- Left Column: Camera -->
+            <div class="booth-left">
+                <div class="camera-wrapper">
+                    <div class="camera-container">
+                        <video id="camera" autoplay playsinline></video>
+                        <canvas id="canvas" style="display: none;"></canvas>
+                        <div class="camera-overlay"></div>
                         <div class="camera-frame"></div>
+                        <div class="flash"></div>
+                        <div id="countdown" class="countdown"></div>
+                        
+                        <!-- Flip Button -->
+                        <button id="flip-btn" class="btn-icon" title="Lật Camera">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+
+                        <!-- Decorations -->
+                        <div class="decoration-fish"></div>
+                        <div class="decoration-seaweed"></div>
+                        <div class="decoration-shells"></div>
                     </div>
-                    <div class="stickers-preview" id="stickers-preview"></div>
+                </div>
+            </div>
+
+            <!-- Right Column: Controls -->
+            <div class="booth-right">
+                <div class="controls-panel">
+                    <div class="panel-header">
+                        <h2>Bảng Điều Khiển</h2>
+                        <a href="https://www.instagram.com/c.nhoa/" target="_blank" class="social-link">
+                            <i class="fab fa-instagram"></i> @c.nhoa
+                        </a>
+                    </div>
                     
-                    <!-- Điều khiển zoom cho camera trên mobile -->
-                    <div class="camera-zoom-controls">
-                        <button class="zoom-btn" id="zoom-in" title="Phóng to"><i class="fas fa-search-plus"></i></button>
-                        <button class="zoom-btn" id="zoom-out" title="Thu nhỏ"><i class="fas fa-search-minus"></i></button>
+                    <div class="control-group mode-group">
+                        <div class="group-title">1. Chọn Chế Độ</div>
+                        <div class="mode-options">
+                            <label class="mode-option">
+                                <input type="radio" name="mode" value="single" checked>
+                                <div class="mode-icon">📸</div>
+                                <span>Đơn</span>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="mode" value="collage_2x2">
+                                <div class="mode-icon">田</div>
+                                <span>2x2</span>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" name="mode" value="strip">
+                                <div class="mode-icon">🎞️</div>
+                                <span>Strip</span>
+                            </label>
+                             <label class="mode-option">
+                                <input type="radio" name="mode" value="side_by_side">
+                                <div class="mode-icon">♊</div>
+                                <span>Đôi</span>
+                            </label>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="controls">
-                    <button id="capture" class="btn btn-primary">
-                        <i class="fas fa-camera"></i> 
-                        <span>Chụp ảnh</span>
-                    </button>
-                    <button id="download" class="btn btn-success" disabled>
-                        <i class="fas fa-download"></i> 
-                        <span>Tải về</span>
-                    </button>
-                    <button id="retake" class="btn btn-secondary" style="display: none;">
-                        <i class="fas fa-redo"></i> 
-                        <span>Chụp lại</span>
-                    </button>
-                    <button id="collage" class="btn btn-info">
-                        <i class="fas fa-th-large"></i> 
-                        <span>Ghép ảnh</span>
-                    </button>
-                </div>
-                
-                <div class="mode-selector">
-                    <div class="mode-title">Chế độ chụp:</div>
-                    <div class="mode-options">
-                        <label class="mode-option">
-                            <input type="radio" name="mode" value="single" checked> 
-                            <span class="mode-icon"><i class="fas fa-portrait"></i></span>
-                            <span>Ảnh đơn</span>
-                        </label>
-                        <label class="mode-option">
-                            <input type="radio" name="mode" value="side_by_side"> 
-                            <span class="mode-icon"><i class="fas fa-images"></i></span>
-                            <span>Đôi bạn</span>
-                        </label>
-                        <label class="mode-option">
-                            <input type="radio" name="mode" value="collage_2x2"> 
-                            <span class="mode-icon"><i class="fas fa-th-large"></i></span>
-                            <span>Bộ 4</span>
-                        </label>
-                        <label class="mode-option">
-                            <input type="radio" name="mode" value="collage_3x3"> 
-                            <span class="mode-icon"><i class="fas fa-th"></i></span>
-                            <span>Bộ 9</span>
-                        </label>
-                        <label class="mode-option">
-                            <input type="radio" name="mode" value="strip"> 
-                            <span class="mode-icon"><i class="fas fa-film"></i></span>
-                            <span>Dải film</span>
-                        </label>
+
+                    <div class="control-group action-group">
+                        <div class="main-actions">
+                            <button id="capture" class="btn btn-primary btn-xl">
+                                <div class="btn-content">
+                                    <i class="fas fa-camera"></i>
+                                    <span>Chụp Ngay</span>
+                                </div>
+                            </button>
+                            <div class="secondary-actions">
+                                <button id="retake" class="btn btn-danger" style="display: none;">
+                                    <i class="fas fa-redo"></i> Chụp lại
+                                </button>
+                                <button id="download" class="btn btn-success" disabled>
+                                    <i class="fas fa-download"></i> Tải ảnh
+                                </button>
+                                <button id="collage" class="btn btn-secondary" style="display: none;">
+                                    <i class="fas fa-th-large"></i> Collage
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-               <div class="filters-container">
-                    <div class="filters-title">Bộ lọc magical:</div>
-                    <div class="filters">
-                        <button class="filter-btn active" data-filter="normal">
-                            <div class="filter-preview normal">
-                                <span class="filter-icon">✨</span>
-                            </div>
-                            <span>Tự nhiên</span>
-                        </button>
-                        <button class="filter-btn" data-filter="grayscale">
-                            <div class="filter-preview grayscale">
-                                <span class="filter-icon">⚫</span>
-                            </div>
-                            <span>Cổ điển</span>
-                        </button>
-                        <button class="filter-btn" data-filter="sepia">
-                            <div class="filter-preview sepia">
-                                <span class="filter-icon">🏛️</span>
-                            </div>
-                            <span>Hoài cổ</span>
-                        </button>
-                        <button class="filter-btn" data-filter="invert">
-                            <div class="filter-preview invert">
-                                <span class="filter-icon">🎭</span>
-                            </div>
-                            <span>Nghệ thuật</span>
-                        </button>
-                        <button class="filter-btn" data-filter="vintage">
-                            <div class="filter-preview vintage">
-                                <span class="filter-icon">📷</span>
-                            </div>
-                            <span>Vintage</span>
-                        </button>
-                        <button class="filter-btn" data-filter="pastel">
-                            <div class="filter-preview pastel">
-                                <span class="filter-icon">🌸</span>
-                            </div>
-                            <span>Pastel</span>
-                        </button>
-                        <button class="filter-btn" data-filter="cute">
-                            <div class="filter-preview cute">
-                                <span class="filter-icon">💖</span>
-                            </div>
-                            <span>Siêu cute</span>
-                        </button>
+                    
+                    <div id="collage-preview" class="collage-preview" style="display: none;">
+                        <h3>Xem trước Collage</h3>
+                        <div id="collage-container" class="collage-container"></div>
+                        <div class="collage-controls">
+                            <button id="finish-collage" class="btn btn-success">Hoàn thành</button>
+                            <button id="cancel-collage" class="btn btn-danger">Hủy</button>
+                        </div>
                     </div>
-                </div>
-                
-                
-                <div id="collage-preview" class="collage-preview" style="display: none;">
-                    <h3>Ghép ảnh siêu đẹp của bạn</h3>
-                    <div class="collage-container" id="collage-container"></div>
-                    <div class="collage-controls">
-                        <button id="finish-collage" class="btn btn-success">
-                            <i class="fas fa-check"></i> Hoàn thành masterpiece
-                        </button>
-                        <button id="cancel-collage" class="btn btn-danger">
-                            <i class="fas fa-times"></i> Bỏ qua
-                        </button>
+
+                    <div class="scrollable-controls">
+                        <div class="control-group filter-group">
+                            <div class="group-title">2. Bộ Lọc Màu</div>
+                            <div class="filters-scroll">
+                                <div class="filter-btn active" data-filter="normal">
+                                    <div class="filter-preview filter-normal"><i class="fas fa-ban"></i></div>
+                                    <span>Gốc</span>
+                                </div>
+                                <div class="filter-btn" data-filter="pastel">
+                                    <div class="filter-preview filter-pastel"><i class="fas fa-magic"></i></div>
+                                    <span>Pastel</span>
+                                </div>
+                                <div class="filter-btn" data-filter="cute">
+                                    <div class="filter-preview filter-cute"><i class="fas fa-heart"></i></div>
+                                    <span>Cute</span>
+                                </div>
+                                <div class="filter-btn" data-filter="vintage">
+                                    <div class="filter-preview filter-vintage"><i class="fas fa-history"></i></div>
+                                    <span>Vintage</span>
+                                </div>
+                                 <div class="filter-btn" data-filter="grayscale">
+                                    <div class="filter-preview filter-grayscale"><i class="fas fa-adjust"></i></div>
+                                    <span>B&W</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="gallery">
-                <h2> Bộ sưu tập ảnh đẹp <i class="fas fa-images"></i></h2>
-                <div id="photos" class="photos-container"></div>
-            </div>
-        </main>
+        </div>
         
-        <footer>
-            <p>© 2025 PhotoBooth - <a href="https://www.instagram.com/c.nhoa/" target="_blank">c.nhoa</a></p>
-        </footer>
+        <div class="booth-footer"></div>
+    </div>
+
+    <div class="gallery">
+        <h2>Thư viện ảnh</h2>
+        <div id="photos" class="photos-container"></div>
     </div>
 
     <script src="script.js"></script>
     <script>
-    // Auto start camera khi load trang - Tối ưu cho mobile
-    window.addEventListener('load', function() {
-        // Kiểm tra và force portrait trên mobile
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        if (isMobile) {
-            // Khóa orientation về portrait
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('portrait').catch(e => {
-                    console.log('Không thể khóa orientation:', e);
-                });
-            }
+        // Mobile optimization script
+        document.addEventListener('DOMContentLoaded', function() {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
-            // Thông báo yêu cầu xoay điện thoại
-            if (window.innerWidth > window.innerHeight) {
-                document.body.style.overflow = 'hidden';
-            }
-        }
-        
-        // Đợi để đảm bảo tất cả đã load xong
-        setTimeout(() => {
-            if (window.startCamera) {
-                window.startCamera();
-            }
-        }, 300); // Giảm delay để tăng tốc
-    });
-
-    // Enhanced mobile functionality với hiệu suất cao hơn
-    document.addEventListener('DOMContentLoaded', function() {
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const isTablet = /iPad|Android(?!.*Mobile)/i.test(navigator.userAgent);
-        
-        if (isMobile && !isTablet) {
-            document.body.classList.add('mobile');
-            
-            console.log('📱 Mobile detected - Optimizing for 9:16 portrait mode');
-            
-            // Tối ưu hiệu suất: Tắt animations không cần thiết
-            const reduceAnimations = document.createElement('style');
-            reduceAnimations.textContent = `
-                @media (max-width: 768px) {
-                    * {
-                        animation-duration: 0.3s !important;
-                        transition-duration: 0.2s !important;
-                    }
+            if (isMobile) {
+                document.body.classList.add('mobile');
+                
+                // Force portrait mode message
+                if (window.innerWidth > window.innerHeight) {
+                    const warning = document.createElement('div');
+                    warning.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);color:white;display:flex;align-items:center;justify-content:center;z-index:9999;text-align:center;padding:20px;';
+                    warning.innerHTML = '<h1>🔄 Vui lòng xoay dọc điện thoại!</h1>';
+                    document.body.appendChild(warning);
                     
-                    .booth::before, .booth::after {
-                        display: none !important;
-                    }
-                    
-                    body::before {
-                        animation: none !important;
-                    }
+                    // Auto hide after 3 seconds
+                    setTimeout(() => {
+                        warning.style.opacity = '0';
+                        warning.style.transition = 'opacity 0.5s';
+                        setTimeout(() => warning.remove(), 500);
+                    }, 3000);
                 }
-            `;
-            document.head.appendChild(reduceAnimations);
-            
-            // Force camera constraints cho mobile 9:16
-            const originalGetUserMedia = navigator.mediaDevices.getUserMedia;
-            navigator.mediaDevices.getUserMedia = function(constraints) {
-                if (constraints.video) {
-                    constraints.video = {
-                        facingMode: { ideal: "user" },
-                        width: { ideal: 720, max: 1080 },
-                        height: { ideal: 1280, max: 1920 },
-                        aspectRatio: { ideal: 9/16, exact: 9/16 },
-                        frameRate: { ideal: 24, max: 30 }
-                    };
-                }
-                return originalGetUserMedia.call(this, constraints);
-            };
-            
-            // Enhanced zoom controls - touch friendly
-            const zoomControls = document.querySelector('.camera-zoom-controls');
-            if (zoomControls) {
-                zoomControls.style.display = 'flex';
-                
-                const zoomIn = document.getElementById('zoom-in');
-                const zoomOut = document.getElementById('zoom-out');
-                const camera = document.getElementById('camera');
-                
-                let scale = 1;
-                
-                function updateCameraTransform() {
-                    const isFlipped = window.isFlipped || true;
-                    if (isFlipped) {
-                        camera.style.transform = `scaleX(-1) scale(${scale})`;
-                    } else {
-                        camera.style.transform = `scale(${scale})`;
-                    }
-                }
-                
-                zoomIn.addEventListener('click', function() {
-                    scale = Math.min(scale + 0.2, 3); // Tăng bước zoom
-                    updateCameraTransform();
-                    this.style.transform = 'scale(1.2)';
-                    setTimeout(() => this.style.transform = 'scale(1)', 150);
-                });
-                
-                zoomOut.addEventListener('click', function() {
-                    scale = Math.max(scale - 0.2, 0.8);
-                    updateCameraTransform();
-                    this.style.transform = 'scale(1.2)';
-                    setTimeout(() => this.style.transform = 'scale(1)', 150);
-                });
             }
-            
-            // Thông báo welcome tối ưu
-            setTimeout(() => {
-                const welcome = document.createElement('div');
-                welcome.innerHTML = '📱 Camera đã tối ưu cho điện thoại!';
-                welcome.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: var(--primary-color);
-                    color: white;
-                    padding: 10px 20px;
-                    border-radius: 25px;
-                    font-size: 14px;
-                    font-weight: 600;
-                    z-index: 1000;
-                    animation: slideDown 0.5s ease;
-                `;
-                document.body.appendChild(welcome);
-                
-                setTimeout(() => {
-                    welcome.style.animation = 'slideUp 0.5s ease forwards';
-                    setTimeout(() => welcome.remove(), 500);
-                }, 2500);
-            }, 1500);
-            
-        } else {
-            // Desktop: ẩn zoom controls
-            const zoomControls = document.querySelector('.camera-zoom-controls');
-            if (zoomControls) {
-                zoomControls.style.display = 'none';
-            }
-        }
-    });
-
-    // Thêm CSS animations tối ưu
-    const mobileStyle = document.createElement('style');
-    mobileStyle.textContent = `
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-        
-        @keyframes slideUp {
-            from { opacity: 1; transform: translateX(-50%) translateY(0); }
-            to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-        }
-        
-        /* Touch feedback tối ưu */
-        @media (max-width: 768px) {
-            .btn:active, .filter-btn:active, .zoom-btn:active {
-                transform: scale(0.95) !important;
-            }
-            
-            /* Tối ưu scroll */
-            body {
-                -webkit-overflow-scrolling: touch;
-                overscroll-behavior: contain;
-            }
-        }
-    `;
-    document.head.appendChild(mobileStyle);
+        });
     </script>
 </body>
 </html>
