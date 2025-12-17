@@ -418,16 +418,18 @@ body::before {
 
 /* Gallery Section */
 .gallery {
-    margin-top: 40px;
+    margin: 40px auto;
     background: rgba(255,255,255,0.5);
     border-radius: 20px;
     padding: 20px;
+    max-width: 1400px; /* Căn chỉnh theo khung máy booth */
 }
 
 .photos-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    display: flex; /* Chuyển sang Flexbox để dễ kiểm soát kích thước */
+    flex-wrap: wrap;
     gap: 20px;
+    justify-content: flex-start;
 }
 
 .photo-item {
@@ -436,6 +438,8 @@ body::before {
     overflow: hidden;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     transition: transform 0.3s;
+    width: 250px; /* Kích thước cố định cho ảnh thumbnail */
+    flex-shrink: 0;
 }
 
 .photo-item:hover {
@@ -444,6 +448,7 @@ body::before {
 
 .photo-item img {
     width: 100%;
+    height: auto;
     display: block;
     padding: 0;
 }
@@ -609,4 +614,47 @@ body::before {
     font-size: 2rem;
     color: #ddd;
     font-weight: bold;
+}
+
+/* Floating Icons Decoration */
+.top-left-decor {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    display: flex;
+    gap: 15px;
+    z-index: 100;
+}
+
+.floating-icon {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.8);
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.2));
+    animation: float 3s ease-in-out infinite;
+}
+
+.floating-icon:nth-child(2) {
+    animation-delay: 0.5s;
+    color: #ff9a9e;
+}
+
+.floating-icon:nth-child(3) {
+    animation-delay: 1s;
+    color: #fad0c4;
+}
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px) rotate(10deg); }
+    100% { transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .top-left-decor {
+        top: 15px;
+        left: 15px;
+    }
+    .floating-icon {
+        font-size: 1.5rem;
+    }
 }

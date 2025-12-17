@@ -10,44 +10,44 @@ class PhotoStickers {
                 name: "Khuôn mặt",
                 icon: "fas fa-smile",
                 stickers: [
-                    { id: "sunglasses", name: "Kính mát", path: "stickers/sunglasses.png" },
-                    { id: "hat", name: "Mũ", path: "stickers/hat.png" },
-                    { id: "mustache", name: "Râu", path: "stickers/mustache.png" },
-                    { id: "crown", name: "Vương miện", path: "stickers/crown.png" },
-                    { id: "mask", name: "Mặt nạ", path: "stickers/mask.png" },
-                    { id: "beard", name: "Râu dài", path: "stickers/beard.png" }
+                    { id: "sunglasses", name: "Kính mát", path: "assets/stickers/sunglasses.png" },
+                    { id: "hat", name: "Mũ", path: "assets/stickers/hat.png" },
+                    { id: "mustache", name: "Râu", path: "assets/stickers/mustache.png" },
+                    { id: "crown", name: "Vương miện", path: "assets/stickers/crown.png" },
+                    { id: "mask", name: "Mặt nạ", path: "assets/stickers/mask.png" },
+                    { id: "beard", name: "Râu dài", path: "assets/stickers/beard.png" }
                 ]
             },
             cute: {
                 name: "Dễ thương",
                 icon: "fas fa-heart",
                 stickers: [
-                    { id: "heart", name: "Trái tim", path: "stickers/heart.png" },
-                    { id: "star", name: "Ngôi sao", path: "stickers/star.png" },
-                    { id: "butterfly", name: "Bướm", path: "stickers/butterfly.png" },
-                    { id: "flower", name: "Hoa", path: "stickers/flower.png" },
-                    { id: "rainbow", name: "Cầu vồng", path: "stickers/rainbow.png" },
-                    { id: "unicorn", name: "Kỳ lân", path: "stickers/unicorn.png" }
+                    { id: "heart", name: "Trái tim", path: "assets/stickers/heart.png" },
+                    { id: "star", name: "Ngôi sao", path: "assets/stickers/star.png" },
+                    { id: "butterfly", name: "Bướm", path: "assets/stickers/butterfly.png" },
+                    { id: "flower", name: "Hoa", path: "assets/stickers/flower.png" },
+                    { id: "rainbow", name: "Cầu vồng", path: "assets/stickers/rainbow.png" },
+                    { id: "unicorn", name: "Kỳ lân", path: "assets/stickers/unicorn.png" }
                 ]
             },
             speech: {
                 name: "Lời thoại",
                 icon: "fas fa-comment",
                 stickers: [
-                    { id: "speech1", name: "Lời nói 1", path: "stickers/speech1.png" },
-                    { id: "speech2", name: "Lời nói 2", path: "stickers/speech2.png" },
-                    { id: "speech3", name: "Lời nói 3", path: "stickers/speech3.png" },
-                    { id: "speech4", name: "Lời nói 4", path: "stickers/speech4.png" }
+                    { id: "speech1", name: "Lời nói 1", path: "assets/stickers/speech1.png" },
+                    { id: "speech2", name: "Lời nói 2", path: "assets/stickers/speech2.png" },
+                    { id: "speech3", name: "Lời nói 3", path: "assets/stickers/speech3.png" },
+                    { id: "speech4", name: "Lời nói 4", path: "assets/stickers/speech4.png" }
                 ]
             },
             emoji: {
                 name: "Biểu cảm",
                 icon: "fas fa-grin-stars",
                 stickers: [
-                    { id: "emoji-love", name: "Yêu", path: "stickers/emoji-love.png" },
-                    { id: "emoji-smile", name: "Cười", path: "stickers/emoji-smile.png" },
-                    { id: "emoji-laugh", name: "Cười lớn", path: "stickers/emoji-laugh.png" },
-                    { id: "emoji-cool", name: "Ngầu", path: "stickers/emoji-cool.png" }
+                    { id: "emoji-love", name: "Yêu", path: "assets/stickers/emoji-love.png" },
+                    { id: "emoji-smile", name: "Cười", path: "assets/stickers/emoji-smile.png" },
+                    { id: "emoji-laugh", name: "Cười lớn", path: "assets/stickers/emoji-laugh.png" },
+                    { id: "emoji-cool", name: "Ngầu", path: "assets/stickers/emoji-cool.png" }
                 ]
             }
         };
