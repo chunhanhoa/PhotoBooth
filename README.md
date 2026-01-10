@@ -40,3 +40,6 @@ Dự án này được cấp phép theo Giấy phép MIT. Xem tệp LICENSE đ�
 
 - Lấy cảm hứng từ các ứng dụng chỉnh sửa ảnh hiện đại.
 - Cảm ơn cộng đồng mã nguồn mở đã cung cấp các công cụ và thư viện.
+
+### Tác giả
+Chu Nhân Hòa
