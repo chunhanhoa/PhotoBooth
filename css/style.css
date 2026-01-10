@@ -506,16 +506,16 @@ body::before {
 
 @media (max-width: 768px) {
     body {
-        padding: 0;
-        background: #fff;
+        padding: 15px;
+        /* Giữ lại background gradient mặc định thay vì màu trắng */
     }
 
     .booth-machine {
-        border-radius: 0;
-        padding: 10px;
-        border: none;
-        background: transparent;
-        box-shadow: none;
+        border-radius: 24px;
+        padding: 20px;
+        border: var(--glass-border);
+        background: rgba(255, 255, 255, 0.9); /* Nền rõ hơn một chút trên mobile */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
     .booth-header h1 {
@@ -530,8 +530,8 @@ body::before {
     .controls-panel {
         padding: 15px;
         background: white;
-        box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-        border-radius: 20px 20px 0 0;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        border-radius: 20px;
         position: relative;
         z-index: 10;
     }
@@ -558,7 +558,23 @@ body::before {
         opacity: 1;
         background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
     }
-}
+
+    /* Fix overflow issues */
+    .booth-main, .booth-left, .booth-right {
+        width: 100%;
+        min-width: 0; /* Prevent grid blowout */
+    }
+
+    .camera-wrapper {
+        border-width: 4px; /* Reduce border size on mobile */
+        max-width: 100%;
+        margin: 0 auto;
+    }
+    
+    .camera-container {
+        width: 100%;
+        border-radius: 16px; /* Match inner radius */
+    }}
 
 /* Filter classes for video */
 .filter-normal { filter: none; }
